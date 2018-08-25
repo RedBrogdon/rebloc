@@ -128,7 +128,10 @@ class Store<S> {
 
     reducerController.addStream(dispatchStream.map<Accumulator<S>>(
         (context) => Accumulator(context.action, states.value)));
-    reducerStream.listen((a) => states.add(a.state));
+    reducerStream.listen((a) {
+      assert(a.state != null);
+      states.add(a.state);
+    });
   }
 
   // TODO(redbrogdon): Figure out how to guarantee that only one action is in
@@ -147,13 +150,14 @@ abstract class Bloc<S> {
   Stream<Accumulator<S>> applyReducer(Stream<Accumulator<S>> input);
 }
 
-typedef Action MiddlewareFunction<S>(DispatchFunction, S, Action);
-typedef S ReducerFunction<S>(S, Action);
+typedef Action MiddlewareFunction<S>(
+    DispatchFunction dispatcher, S state, Action action);
+typedef S ReducerFunction<S>(S state, Action action);
 
 /// A convenience [Bloc] class that handles the stream mapping bits for you.
 /// Subclasses can simply override the [middleware] and [reducer] getters to
 /// return their implementations.
-abstract class FunctionalBloc<S> implements Bloc<S> {
+abstract class SimpleBloc<S> implements Bloc<S> {
   @override
   Stream<MiddlewareContext<S>> applyMiddleware(
       Stream<MiddlewareContext<S>> input) {

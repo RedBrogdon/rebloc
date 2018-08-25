@@ -7,12 +7,17 @@ homepage: https://github.com/redbrogdon/rebloc
 dependencies:
 
   rxdart: ^0.18.1
+  meta: ^1.1.5
 
   flutter:
     sdk: flutter
 
 dev_dependencies:
+  test: ^0.12.37
   flutter_test:
     sdk: flutter
+
+environment:
+  sdk: '>=1.9.9 <3.0.0'
 
 flutter:
