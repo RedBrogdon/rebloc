@@ -51,7 +51,7 @@ class AppState {
   }
 
   String toString() {
-    return 'anInt is $anInt, aDouble is $aDouble, and aString is \'$aString\'.';
+    return 'anInt is $anInt, aDouble is $aDouble, and aString is \'$aString\'';
   }
 }
 
@@ -154,22 +154,6 @@ class LimitBloc extends SimpleBloc<AppState> {
   }
 }
 
-class IntViewModel extends ViewModel<AppState> {
-  final int anInt;
-
-  IntViewModel(DispatchFunction dispatcher, AppState state)
-      : anInt = state.anInt,
-        super(dispatcher);
-
-  @override
-  bool operator ==(other) {
-    return anInt == other.anInt;
-  }
-
-  @override
-  int get hashCode => anInt.hashCode;
-}
-
 class IntWidget extends StatelessWidget {
   final int anInt;
   final VoidCallback onIncrement;
@@ -196,22 +180,6 @@ class IntWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-class DoubleViewModel extends ViewModel<AppState> {
-  final double aDouble;
-
-  DoubleViewModel(DispatchFunction dispatcher, AppState state)
-      : aDouble = state.aDouble,
-        super(dispatcher);
-
-  @override
-  bool operator ==(other) {
-    return aDouble == other.aDouble;
-  }
-
-  @override
-  int get hashCode => aDouble.hashCode;
 }
 
 class DoubleWidget extends StatelessWidget {
@@ -242,22 +210,6 @@ class DoubleWidget extends StatelessWidget {
   }
 }
 
-class StringViewModel extends ViewModel<AppState> {
-  final String aString;
-
-  StringViewModel(DispatchFunction dispatcher, AppState state)
-      : aString = state.aString,
-        super(dispatcher);
-
-  @override
-  bool operator ==(other) {
-    return aString == other.aString;
-  }
-
-  @override
-  int get hashCode => aString.hashCode;
-}
-
 class StringWidget extends StatelessWidget {
   final String aString;
   final VoidCallback onIncrement;
@@ -286,12 +238,10 @@ class StringWidget extends StatelessWidget {
   }
 }
 
-class DescriptionViewModel extends ViewModel<AppState> {
+class DescriptionViewModel {
   final String description;
 
-  DescriptionViewModel(DispatchFunction dispatcher, AppState state)
-      : description = state.toString(),
-        super(dispatcher);
+  DescriptionViewModel(AppState state) : description = state.toString() + "!";
 
   @override
   bool operator ==(other) {
@@ -350,51 +300,46 @@ class MyHomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Integer view model:', style: textTheme.subhead),
-              ViewModelSubscriber<AppState, IntViewModel>(
-                converter: (dispatcher, state) =>
-                    IntViewModel(dispatcher, state),
-                builder: (context, viewModel) {
+              ViewModelSubscriber<AppState, int>(
+                converter: (state) => state.anInt,
+                builder: (context, dispatcher, viewModel) {
                   return IntWidget(
-                    anInt: viewModel.anInt,
-                    onIncrement: () => viewModel.dispatcher(IntAction()),
+                    anInt: viewModel,
+                    onIncrement: () => dispatcher(IntAction()),
                   );
                 },
               ),
               SizedBox(height: 24.0),
               Text('Double view model:', style: textTheme.subhead),
-              ViewModelSubscriber<AppState, DoubleViewModel>(
-                converter: (dispatcher, state) =>
-                    DoubleViewModel(dispatcher, state),
-                builder: (context, viewModel) {
+              ViewModelSubscriber<AppState, double>(
+                converter: (state) => state.aDouble,
+                builder: (context, dispatcher, viewModel) {
                   return DoubleWidget(
-                    aDouble: viewModel.aDouble,
-                    onIncrement: () => viewModel.dispatcher(DoubleAction()),
+                    aDouble: viewModel,
+                    onIncrement: () => dispatcher(DoubleAction()),
                   );
                 },
               ),
               SizedBox(height: 24.0),
               Text('String view model:', style: textTheme.subhead),
-              ViewModelSubscriber<AppState, StringViewModel>(
-                converter: (dispatcher, state) =>
-                    StringViewModel(dispatcher, state),
-                builder: (context, viewModel) {
+              ViewModelSubscriber<AppState, String>(
+                converter: (state) => state.aString,
+                builder: (context, dispatcher, viewModel) {
                   return StringWidget(
-                    aString: viewModel.aString,
-                    onIncrement: () => viewModel.dispatcher(StringAction('A')),
+                    aString: viewModel,
+                    onIncrement: () => dispatcher(StringAction('A')),
                   );
                 },
               ),
               SizedBox(height: 24.0),
               Text('Combined view model:', style: textTheme.subhead),
               ViewModelSubscriber<AppState, DescriptionViewModel>(
-                converter: (dispatcher, state) =>
-                    DescriptionViewModel(dispatcher, state),
-                builder: (context, viewModel) {
+                converter: (state) => DescriptionViewModel(state),
+                builder: (context, dispatcher, viewModel) {
                   return DescriptionWidget(
                     description: viewModel.description,
-                    onIncrement: () =>
-                        viewModel.dispatcher(DescriptionAction()),
-                    onReset: () => viewModel.dispatcher(ResetAction()),
+                    onIncrement: () => dispatcher(DescriptionAction()),
+                    onReset: () => dispatcher(ResetAction()),
                   );
                 },
               ),

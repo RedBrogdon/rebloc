@@ -59,25 +59,16 @@ class _InheritedStoreProvider<S> extends InheritedWidget {
       (oldWidget.store != store);
 }
 
-/// A subset (or "view") of the data contained in state object emitted by a
-/// [Store], plus a dispatcher for dispatching new actions to that store.
-class ViewModel<S> {
-  final DispatchFunction dispatcher;
-
-  const ViewModel(this.dispatcher);
-}
-
 /// Accepts a [BuildContext] and [ViewModel] and builds a Widget in response.
-typedef Widget ViewModelWidgetBuilder<S, V extends ViewModel<S>>(
-    BuildContext context, V viewModel);
+typedef Widget ViewModelWidgetBuilder<S, V>(
+    BuildContext context, DispatchFunction dispatcher, V viewModel);
 
 /// Creates a new view model instance from a state object.
-typedef V ViewModelConverter<S, V extends ViewModel<S>>(
-    DispatchFunction dispatcher, S state);
+typedef V ViewModelConverter<S, V>(S state);
 
 /// Transforms a stream of state objects found via [StoreProvider] into a stream
 /// of view models, and builds a [Widget] each time a new view model is emitted.
-class ViewModelSubscriber<S, V extends ViewModel<S>> extends StatelessWidget {
+class ViewModelSubscriber<S, V> extends StatelessWidget {
   final ViewModelConverter<S, V> converter;
   final ViewModelWidgetBuilder<S, V> builder;
 
@@ -97,7 +88,7 @@ class ViewModelSubscriber<S, V extends ViewModel<S>> extends StatelessWidget {
 }
 
 /// Does the actual work for [ViewModelSubscriber].
-class _ViewModelStreamBuilder<S, V extends ViewModel<S>>
+class _ViewModelStreamBuilder<S, V>
     extends StatefulWidget {
   final DispatchFunction dispatcher;
   final BehaviorSubject<S> stream;
@@ -118,15 +109,15 @@ class _ViewModelStreamBuilder<S, V extends ViewModel<S>>
 
 /// Subscribes to a stream of app state objects, converts each one into a view
 /// model, and then uses it to rebuild its children.
-class _ViewModelStreamBuilderState<S, V extends ViewModel<S>>
+class _ViewModelStreamBuilderState<S, V>
     extends State<_ViewModelStreamBuilder<S, V>> {
   V _latestViewModel;
   StreamSubscription<V> _subscription;
 
   void _subscribe() {
-    _latestViewModel = widget.converter(widget.dispatcher, widget.stream.value);
+    _latestViewModel = widget.converter(widget.stream.value);
     _subscription = widget.stream
-        .map<V>((s) => widget.converter(widget.dispatcher, s))
+        .map<V>((s) => widget.converter(s))
         .distinct()
         .listen((viewModel) {
       setState(() => _latestViewModel = viewModel);
@@ -155,6 +146,6 @@ class _ViewModelStreamBuilderState<S, V extends ViewModel<S>>
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, _latestViewModel);
+    return widget.builder(context, widget.dispatcher, _latestViewModel);
   }
 }
