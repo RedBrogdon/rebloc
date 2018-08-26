@@ -4,7 +4,7 @@ description: An example showing how the rebloc library works.
 dependencies:
 
   rebloc:
-    path: '..'
+    path: ../
   intl: ^0.15.7
 
   flutter:

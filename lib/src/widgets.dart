@@ -59,8 +59,8 @@ class _InheritedStoreProvider<S> extends InheritedWidget {
       (oldWidget.store != store);
 }
 
-/// A subset or view of the data contained in state object emitted by a [Store],
-/// plus a dispatcher for dispatching new actions to that store.
+/// A subset (or "view") of the data contained in state object emitted by a
+/// [Store], plus a dispatcher for dispatching new actions to that store.
 class ViewModel<S> {
   final DispatchFunction dispatcher;
 
@@ -123,10 +123,7 @@ class _ViewModelStreamBuilderState<S, V extends ViewModel<S>>
   V _latestViewModel;
   StreamSubscription<V> _subscription;
 
-  // TODO(redbrogdon): make sure this isn't somehow building twice.
-  @override
-  void initState() {
-    super.initState();
+  void _subscribe() {
     _latestViewModel = widget.converter(widget.dispatcher, widget.stream.value);
     _subscription = widget.stream
         .map<V>((s) => widget.converter(widget.dispatcher, s))
@@ -134,6 +131,19 @@ class _ViewModelStreamBuilderState<S, V extends ViewModel<S>>
         .listen((viewModel) {
       setState(() => _latestViewModel = viewModel);
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _subscribe();
+  }
+
+  @override
+  void didUpdateWidget(_ViewModelStreamBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _subscription.cancel();
+    _subscribe();
   }
 
   @override

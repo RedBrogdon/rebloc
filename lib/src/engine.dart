@@ -62,7 +62,7 @@ abstract class Action {
 /// An action that middleware methods can return in order to cancel (or
 /// "swallow") an action already dispatched to their [Store]. Because rebloc
 /// uses a stream to track [Actions] through the dispatch->middleware->reducer
-/// pipeline, a middleware method must return *something*. By returning an
+/// pipeline, a middleware method should return something. By returning an
 /// instance of this class (and making sure that none of their middleware or
 /// reducer methods attempt to catch and act on it), a developer can in effect
 /// cancel actions via middleware.
@@ -174,9 +174,9 @@ abstract class SimpleBloc<S> implements Bloc<S> {
   @override
   Stream<MiddlewareContext<S>> applyMiddleware(
       Stream<MiddlewareContext<S>> input) {
-    return input.map((context) {
+    return input.asyncMap((context) async {
       return context.copyWith(
-          middleware(context.dispatcher, context.state, context.action));
+          await middleware(context.dispatcher, context.state, context.action));
     });
   }
 
@@ -188,7 +188,7 @@ abstract class SimpleBloc<S> implements Bloc<S> {
     });
   }
 
-  Action middleware(DispatchFunction dispatcher, S state, Action action) => action;
+  FutureOr<Action> middleware(DispatchFunction dispatcher, S state, Action action) => action;
 
   S reducer(S state, Action action) => state;
 }

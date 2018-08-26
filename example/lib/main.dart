@@ -2,11 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:rebloc/rebloc.dart';
 import 'package:intl/intl.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(
+      new MaterialApp(
+        title: 'Rebloc Example',
+        home: StoreProvider<AppState>(
+          store: Store<AppState>(
+            initialState: AppState.initialState(),
+            blocs: [
+              LoggerBloc(),
+              LimitBloc(),
+              IntBloc(),
+              DoubleBloc(),
+              StringBloc(),
+              DescriptionBloc(),
+            ],
+          ),
+          child: new MyHomePage(),
+        ),
+      ),
+    );
 
 final dateFmt = DateFormat.jms();
 
@@ -32,29 +52,6 @@ class AppState {
 
   String toString() {
     return 'anInt is $anInt, aDouble is $aDouble, and aString is \'$aString\'.';
-  }
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Rebloc Example',
-      home: StoreProvider<AppState>(
-        store: Store<AppState>(
-          initialState: AppState.initialState(),
-          blocs: [
-            LoggerBloc(),
-            LimitBloc(),
-            IntBloc(),
-            DoubleBloc(),
-            StringBloc(),
-            DescriptionBloc(),
-          ],
-        ),
-        child: new MyHomePage(),
-      ),
-    );
   }
 }
 
@@ -127,9 +124,12 @@ class DescriptionBloc extends SimpleBloc<AppState> {
 /// Logs each incoming action.
 class LoggerBloc extends SimpleBloc<AppState> {
   @override
-  Action middleware(dispatcher, state, action) {
+  Future<Action> middleware(dispatcher, state, action) async {
     print('${action.runtimeType} dispatched. State: $state.');
-    return action;
+
+    // This is just to demonstrate that middleware can be async. In most cases,
+    // you'll want to cancel or return immediately.
+    return await Future.delayed(Duration.zero, () => action);
   }
 }
 
