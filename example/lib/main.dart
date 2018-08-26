@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 void main() => runApp(new MyApp());
 
-final dateFmt = DateFormat.Hms();
+final dateFmt = DateFormat.jms();
 
 class AppState {
   final int anInt;
@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
           initialState: AppState.initialState(),
           blocs: [
             LoggerBloc(),
+            LimitBloc(),
             IntBloc(),
             DoubleBloc(),
             StringBloc(),
@@ -73,62 +74,84 @@ class ResetAction extends Action {}
 
 class IntBloc extends SimpleBloc<AppState> {
   @override
-  ReducerFunction<AppState> get reducer => (state, action) {
-        if (action is IntAction) {
-          return state.copyWith(anInt: state.anInt + 1);
-        } else if (action is ResetAction) {
-          return state.copyWith(anInt: 0);
-        }
+  AppState reducer(state, action) {
+    if (action is IntAction) {
+      return state.copyWith(anInt: state.anInt + 1);
+    } else if (action is ResetAction) {
+      return state.copyWith(anInt: 0);
+    }
 
-        return state;
-      };
+    return state;
+  }
 }
 
 class DoubleBloc extends SimpleBloc<AppState> {
   @override
-  ReducerFunction<AppState> get reducer => (state, action) {
-        if (action is DoubleAction) {
-          return state.copyWith(aDouble: state.aDouble + 1.0);
-        } else if (action is ResetAction) {
-          return state.copyWith(aDouble: 0.0);
-        }
+  AppState reducer(state, action) {
+    if (action is DoubleAction) {
+      return state.copyWith(aDouble: state.aDouble + 1.0);
+    } else if (action is ResetAction) {
+      return state.copyWith(aDouble: 0.0);
+    }
 
-        return state;
-      };
+    return state;
+  }
 }
 
 class StringBloc extends SimpleBloc<AppState> {
   @override
-  ReducerFunction<AppState> get reducer => (state, action) {
-        if (action is StringAction) {
-          return state.copyWith(aString: '${state.aString}${action.newChar}');
-        } else if (action is ResetAction) {
-          return state.copyWith(aString: 'AAA');
-        }
+  AppState reducer(state, action) {
+    if (action is StringAction) {
+      return state.copyWith(aString: '${state.aString}${action.newChar}');
+    } else if (action is ResetAction) {
+      return state.copyWith(aString: 'AAA');
+    }
 
-        return state;
-      };
+    return state;
+  }
 }
 
 class DescriptionBloc extends SimpleBloc<AppState> {
   @override
-  MiddlewareFunction<AppState> get middleware => (dispatcher, state, action) {
-        if (action is DescriptionAction) {
-          dispatcher(IntAction());
-          dispatcher(DoubleAction());
-          dispatcher(StringAction('B'));
-        }
+  Action middleware(dispatcher, state, action) {
+    if (action is DescriptionAction) {
+      dispatcher(IntAction());
+      dispatcher(DoubleAction());
+      dispatcher(StringAction('B'));
+    }
 
-        return action;
-      };
+    return action;
+  }
 }
 
+/// Logs each incoming action.
 class LoggerBloc extends SimpleBloc<AppState> {
   @override
-  MiddlewareFunction<AppState> get middleware => (dispatcher, state, action) {
-        print('${action.runtimeType} dispatched. State: $state.');
-        return action;
-      };
+  Action middleware(dispatcher, state, action) {
+    print('${action.runtimeType} dispatched. State: $state.');
+    return action;
+  }
+}
+
+/// Limits each of the three values in [AppState] to certain maximums. This
+/// [Bloc] must appear before the others in the [List] given to [Store].
+class LimitBloc extends SimpleBloc<AppState> {
+  static const maxInt = 10;
+  static const maxDouble = 10;
+  static const maxLength = 10;
+
+  @override
+  Action middleware(
+      DispatchFunction dispatcher, AppState state, Action action) {
+    if ((action is IntAction && state.anInt == maxInt) ||
+        (action is DoubleAction && state.aDouble == maxDouble) ||
+        (action is StringAction && state.aString.length == maxLength)) {
+      // Cancel (or "swallow") the action.
+      return Action.cancelled();
+    }
+
+    return action;
+  }
 }
 
 class IntViewModel extends ViewModel<AppState> {
@@ -163,7 +186,7 @@ class IntWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Value: $anInt'),
-          Text('Rebuilt: $dateStr'),
+          Text('Rebuilt at $dateStr'),
           SizedBox(height: 4.0),
           RaisedButton(
             child: Text('Increment'),
@@ -207,7 +230,7 @@ class DoubleWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Value: $aDouble'),
-          Text('Rebuilt: $dateStr'),
+          Text('Rebuilt at $dateStr'),
           SizedBox(height: 4.0),
           RaisedButton(
             child: Text('Increment'),
@@ -251,7 +274,7 @@ class StringWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Value: $aString'),
-          Text('Rebuilt: $dateStr'),
+          Text('Rebuilt at $dateStr'),
           SizedBox(height: 4.0),
           RaisedButton(
             child: Text('Increment'),
@@ -296,7 +319,7 @@ class DescriptionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Value: $description'),
-          Text('Rebuilt: $dateStr'),
+          Text('Rebuilt at $dateStr'),
           SizedBox(height: 4.0),
           RaisedButton(
             child: Text('Increment everything'),

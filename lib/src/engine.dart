@@ -52,12 +52,25 @@ import 'package:rxdart/subjects.dart' show BehaviorSubject;
 ///   can be dispatched in response to user events like button presses.
 
 /// A Redux-style action. Apps change their overall state by dispatching actions
-/// to the [Store].
+/// to the [Store], where they are acted on by middleware and reducers.
 abstract class Action {
   const Action();
+
+  factory Action.cancelled() => const _CancelledAction();
 }
 
-/// A function by which an [Action] can be dispatched to a [Store].
+/// An action that middleware methods can return in order to cancel (or
+/// "swallow") an action already dispatched to their [Store]. Because rebloc
+/// uses a stream to track [Actions] through the dispatch->middleware->reducer
+/// pipeline, a middleware method must return *something*. By returning an
+/// instance of this class (and making sure that none of their middleware or
+/// reducer methods attempt to catch and act on it), a developer can in effect
+/// cancel actions via middleware.
+class _CancelledAction extends Action {
+  const _CancelledAction();
+}
+
+/// A function that can dispatch an [Action] to a [Store].
 typedef void DispatchFunction(Action action);
 
 /// An accumulator for reducer functions.
@@ -111,14 +124,14 @@ class MiddlewareContext<S> {
 /// - Expose the [dispatcher] by which a new [Action] can be dispatched.
 class Store<S> {
   final _dispatchController = StreamController<MiddlewareContext<S>>();
+  final _reducerController = StreamController<Accumulator<S>>();
   final BehaviorSubject<S> states;
 
   Store({
     @required S initialState,
     List<Bloc<S>> blocs = const [],
   }) : states = BehaviorSubject<S>(seedValue: initialState) {
-    final reducerController = StreamController<Accumulator<S>>();
-    var reducerStream = reducerController.stream;
+    var reducerStream = _reducerController.stream;
     var dispatchStream = _dispatchController.stream;
 
     for (Bloc<S> bloc in blocs) {
@@ -126,7 +139,7 @@ class Store<S> {
       reducerStream = bloc.applyReducer(reducerStream);
     }
 
-    reducerController.addStream(dispatchStream.map<Accumulator<S>>(
+    _reducerController.addStream(dispatchStream.map<Accumulator<S>>(
         (context) => Accumulator(context.action, states.value)));
     reducerStream.listen((a) {
       assert(a.state != null);
@@ -175,7 +188,7 @@ abstract class SimpleBloc<S> implements Bloc<S> {
     });
   }
 
-  MiddlewareFunction<S> get middleware => (dispatcher, state, action) => action;
+  Action middleware(DispatchFunction dispatcher, S state, Action action) => action;
 
-  ReducerFunction<S> get reducer => (state, action) => state;
+  S reducer(S state, Action action) => state;
 }
