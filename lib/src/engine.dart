@@ -132,7 +132,7 @@ class Store<S> {
     List<Bloc<S>> blocs = const [],
   }) : states = BehaviorSubject<S>(seedValue: initialState) {
     var reducerStream = _reducerController.stream;
-    var dispatchStream = _dispatchController.stream;
+    var dispatchStream = _dispatchController.stream.asBroadcastStream();
 
     for (Bloc<S> bloc in blocs) {
       dispatchStream = bloc.applyMiddleware(dispatchStream);

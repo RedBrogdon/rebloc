@@ -6,7 +6,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rebloc/rebloc.dart';
-import 'package:intl/intl.dart';
+
+String _formatTime(DateTime time) {
+  String hours = time.hour.toString().padLeft(2, '0');
+  String minutes = time.minute.toString().padLeft(2, '0');
+  String seconds = time.second.toString().padLeft(2, '0');
+  String milliseconds = time.millisecond.toString().padLeft(3, '0');
+  return '$hours:$minutes:$seconds.$milliseconds';
+}
 
 void main() => runApp(
       new MaterialApp(
@@ -158,7 +165,7 @@ class IntDisplayWidget extends StatelessWidget {
     return ViewModelSubscriber<AppState, int>(
       converter: (state) => state.anInt,
       builder: (context, dispatcher, viewModel) {
-        final dateStr = DateFormat.jms().format(DateTime.now());
+        final dateStr = _formatTime(DateTime.now());
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -186,7 +193,7 @@ class DoubleDisplayWidget extends StatelessWidget {
     return ViewModelSubscriber<AppState, double>(
       converter: (state) => state.aDouble,
       builder: (context, dispatcher, viewModel) {
-        final dateStr = DateFormat.jms().format(DateTime.now());
+        final dateStr = _formatTime(DateTime.now());
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -214,7 +221,7 @@ class StringDisplayWidget extends StatelessWidget {
     return ViewModelSubscriber<AppState, String>(
       converter: (state) => state.aString,
       builder: (context, dispatcher, viewModel) {
-        final dateStr = DateFormat.jms().format(DateTime.now());
+        final dateStr = _formatTime(DateTime.now());
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -256,7 +263,7 @@ class DescriptionDisplayWidget extends StatelessWidget {
     return ViewModelSubscriber<AppState, DescriptionViewModel>(
       converter: (state) => DescriptionViewModel(state),
       builder: (context, dispatcher, viewModel) {
-        final dateStr = DateFormat.jms().format(DateTime.now());
+        final dateStr = _formatTime(DateTime.now());
 
         return Padding(
           padding: const EdgeInsets.all(8.0),

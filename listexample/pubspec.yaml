@@ -1,10 +1,11 @@
-name: example
-description: An example showing how the rebloc library works.
+name: listexample
+description: An example showing how rebloc can minimize list rebuilds.
 
 dependencies:
 
   rebloc:
     path: ../
+  intl: ^0.15.7
 
   flutter:
     sdk: flutter
@@ -16,4 +17,3 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
-
