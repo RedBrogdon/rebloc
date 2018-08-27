@@ -28,8 +28,6 @@ void main() => runApp(
       ),
     );
 
-final dateFmt = DateFormat.jms();
-
 class AppState {
   final int anInt;
   final double aDouble;
@@ -134,7 +132,7 @@ class LoggerBloc extends SimpleBloc<AppState> {
 }
 
 /// Limits each of the three values in [AppState] to certain maximums. This
-/// [Bloc] must appear before the others in the [List] given to [Store].
+/// [Bloc] must appear before the others in the list given to the [Store].
 class LimitBloc extends SimpleBloc<AppState> {
   static const maxInt = 10;
   static const maxDouble = 10;
@@ -146,7 +144,7 @@ class LimitBloc extends SimpleBloc<AppState> {
     if ((action is IntAction && state.anInt == maxInt) ||
         (action is DoubleAction && state.aDouble == maxDouble) ||
         (action is StringAction && state.aString.length == maxLength)) {
-      // Cancel (or "swallow") the action.
+      // Cancel (or "swallow") the action if a limit would be exceeded.
       return Action.cancelled();
     }
 
@@ -154,86 +152,86 @@ class LimitBloc extends SimpleBloc<AppState> {
   }
 }
 
-class IntWidget extends StatelessWidget {
-  final int anInt;
-  final VoidCallback onIncrement;
-
-  const IntWidget({this.anInt, this.onIncrement});
-
+class IntDisplayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dateStr = dateFmt.format(DateTime.now());
+    return ViewModelSubscriber<AppState, int>(
+      converter: (state) => state.anInt,
+      builder: (context, dispatcher, viewModel) {
+        final dateStr = DateFormat.jms().format(DateTime.now());
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('Value: $anInt'),
-          Text('Rebuilt at $dateStr'),
-          SizedBox(height: 4.0),
-          RaisedButton(
-            child: Text('Increment'),
-            onPressed: onIncrement,
-          )
-        ],
-      ),
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Value: $viewModel'),
+              Text('Rebuilt at $dateStr'),
+              SizedBox(height: 4.0),
+              RaisedButton(
+                child: Text('Increment'),
+                onPressed: () => dispatcher(IntAction()),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
-class DoubleWidget extends StatelessWidget {
-  final double aDouble;
-  final VoidCallback onIncrement;
-
-  const DoubleWidget({this.aDouble, this.onIncrement});
-
+class DoubleDisplayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dateStr = dateFmt.format(DateTime.now());
+    return ViewModelSubscriber<AppState, double>(
+      converter: (state) => state.aDouble,
+      builder: (context, dispatcher, viewModel) {
+        final dateStr = DateFormat.jms().format(DateTime.now());
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('Value: $aDouble'),
-          Text('Rebuilt at $dateStr'),
-          SizedBox(height: 4.0),
-          RaisedButton(
-            child: Text('Increment'),
-            onPressed: onIncrement,
-          )
-        ],
-      ),
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Value: $viewModel'),
+              Text('Rebuilt at $dateStr'),
+              SizedBox(height: 4.0),
+              RaisedButton(
+                child: Text('Increment'),
+                onPressed: () => dispatcher(DoubleAction()),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
-class StringWidget extends StatelessWidget {
-  final String aString;
-  final VoidCallback onIncrement;
-
-  const StringWidget({this.aString, this.onIncrement});
-
+class StringDisplayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dateStr = dateFmt.format(DateTime.now());
+    return ViewModelSubscriber<AppState, String>(
+      converter: (state) => state.aString,
+      builder: (context, dispatcher, viewModel) {
+        final dateStr = DateFormat.jms().format(DateTime.now());
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('Value: $aString'),
-          Text('Rebuilt at $dateStr'),
-          SizedBox(height: 4.0),
-          RaisedButton(
-            child: Text('Increment'),
-            onPressed: onIncrement,
-          )
-        ],
-      ),
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Value: $viewModel'),
+              Text('Rebuilt at $dateStr'),
+              SizedBox(height: 4.0),
+              RaisedButton(
+                child: Text('Increment'),
+                onPressed: () => dispatcher(StringAction('A')),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -252,36 +250,35 @@ class DescriptionViewModel {
   int get hashCode => description.hashCode;
 }
 
-class DescriptionWidget extends StatelessWidget {
-  final String description;
-  final VoidCallback onIncrement;
-  final VoidCallback onReset;
-
-  const DescriptionWidget({this.description, this.onIncrement, this.onReset});
-
+class DescriptionDisplayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dateStr = dateFmt.format(DateTime.now());
+    return ViewModelSubscriber<AppState, DescriptionViewModel>(
+      converter: (state) => DescriptionViewModel(state),
+      builder: (context, dispatcher, viewModel) {
+        final dateStr = DateFormat.jms().format(DateTime.now());
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('Value: $description'),
-          Text('Rebuilt at $dateStr'),
-          SizedBox(height: 4.0),
-          RaisedButton(
-            child: Text('Increment everything'),
-            onPressed: onIncrement,
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Value: ${viewModel.description}'),
+              Text('Rebuilt at $dateStr'),
+              SizedBox(height: 4.0),
+              RaisedButton(
+                child: Text('Increment everything'),
+                onPressed: () => dispatcher(DescriptionAction()),
+              ),
+              SizedBox(height: 8.0),
+              RaisedButton(
+                child: Text('Reset everything'),
+                onPressed: () => dispatcher(ResetAction()),
+              )
+            ],
           ),
-          SizedBox(height: 8.0),
-          RaisedButton(
-            child: Text('Reset everything'),
-            onPressed: onReset,
-          )
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -300,49 +297,16 @@ class MyHomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Integer view model:', style: textTheme.subhead),
-              ViewModelSubscriber<AppState, int>(
-                converter: (state) => state.anInt,
-                builder: (context, dispatcher, viewModel) {
-                  return IntWidget(
-                    anInt: viewModel,
-                    onIncrement: () => dispatcher(IntAction()),
-                  );
-                },
-              ),
+              IntDisplayWidget(),
               SizedBox(height: 24.0),
               Text('Double view model:', style: textTheme.subhead),
-              ViewModelSubscriber<AppState, double>(
-                converter: (state) => state.aDouble,
-                builder: (context, dispatcher, viewModel) {
-                  return DoubleWidget(
-                    aDouble: viewModel,
-                    onIncrement: () => dispatcher(DoubleAction()),
-                  );
-                },
-              ),
+              DoubleDisplayWidget(),
               SizedBox(height: 24.0),
               Text('String view model:', style: textTheme.subhead),
-              ViewModelSubscriber<AppState, String>(
-                converter: (state) => state.aString,
-                builder: (context, dispatcher, viewModel) {
-                  return StringWidget(
-                    aString: viewModel,
-                    onIncrement: () => dispatcher(StringAction('A')),
-                  );
-                },
-              ),
+              StringDisplayWidget(),
               SizedBox(height: 24.0),
               Text('Combined view model:', style: textTheme.subhead),
-              ViewModelSubscriber<AppState, DescriptionViewModel>(
-                converter: (state) => DescriptionViewModel(state),
-                builder: (context, dispatcher, viewModel) {
-                  return DescriptionWidget(
-                    description: viewModel.description,
-                    onIncrement: () => dispatcher(DescriptionAction()),
-                    onReset: () => dispatcher(ResetAction()),
-                  );
-                },
-              ),
+              DescriptionDisplayWidget(),
             ],
           ),
         ),

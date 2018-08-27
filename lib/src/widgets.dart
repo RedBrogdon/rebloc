@@ -59,15 +59,28 @@ class _InheritedStoreProvider<S> extends InheritedWidget {
       (oldWidget.store != store);
 }
 
-/// Accepts a [BuildContext] and [ViewModel] and builds a Widget in response.
+/// Accepts a [BuildContext] and [ViewModel] and builds a Widget in response. A
+/// [DispatchFunction] is provided so widgets in the returned subtree can
+/// dispatch new actions to the [Store] in response to UI events.
 typedef Widget ViewModelWidgetBuilder<S, V>(
     BuildContext context, DispatchFunction dispatcher, V viewModel);
 
-/// Creates a new view model instance from a state object.
+/// Creates a new view model instance from the given state object. This method
+/// should be used to narrow or filter the data present in [state] to the
+/// minimum required by the [ViewModelWidgetBuilder] the converter will be used
+/// with.
 typedef V ViewModelConverter<S, V>(S state);
 
 /// Transforms a stream of state objects found via [StoreProvider] into a stream
-/// of view models, and builds a [Widget] each time a new view model is emitted.
+/// of viewmodels, and builds a [Widget] each time a distinctly new view model
+/// is emitted.
+///
+/// This class is designed to minimize the number of times its subtree is built.
+/// When a new state is emitted by [Store.states], it's converted into a
+/// viewmodel using the provided [converter]. If (And only if) that new instance
+/// is unequal to the previous one, the widget subtree is rebuilt using
+/// [builder]. Any state changes emitted by the [Store] that don't impact the
+/// viewmodel used by a particular [ViewModelSubscriber] are ignored by it.
 class ViewModelSubscriber<S, V> extends StatelessWidget {
   final ViewModelConverter<S, V> converter;
   final ViewModelWidgetBuilder<S, V> builder;
@@ -130,6 +143,10 @@ class _ViewModelStreamBuilderState<S, V>
     _subscribe();
   }
 
+  /// During stateful hot reload, the [_ViewModelStreamBuilder] widget is
+  /// replaced, but this [State] object is not. It's important, therefore, to
+  /// unsubscribe from the previous widget's stream and subscribe to the new
+  /// one.
   @override
   void didUpdateWidget(_ViewModelStreamBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
