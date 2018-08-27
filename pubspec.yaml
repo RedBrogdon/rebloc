@@ -29,6 +29,6 @@ dev_dependencies:
     sdk: flutter
 
 environment:
-  sdk: '>=1.9.9 <3.0.0'
+  sdk: '>=2.0.0-dev.58.0.flutter-f981f09760 <3.0.0'
 
 flutter:
