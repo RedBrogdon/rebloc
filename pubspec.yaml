@@ -1,17 +1,10 @@
 name: rebloc
 description: |
   A state management library for Flutter that combines aspects of
-  Redux and BLoC. Where traditional Redux implementations use
-  functional programming techniques to compose middleware and
-  reducers together, Rebloc uses streams. Devlopers can create
-  business logic components (BLoCs) that provide middleware and
-  reducer functionality, and link them into the
-  dispatch->middleware->reducer stream. Also included in the
-  library is a set of Widgets for subscribing to the stream of
-  app states emitted by a Store, building view models from it,
-  and rebuilding Widget subtrees when distinctly new view models
-  result.
-version: 0.0.2
+  Redux and BLoC. Rebloc uses streams and BLoCs to compose
+  middleware and reducers.
+
+version: 0.0.3
 author: Andrew Brogdon <brogdon+github@gmail.com>
 homepage: https://github.com/redbrogdon/rebloc
 

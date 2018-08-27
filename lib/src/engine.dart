@@ -188,7 +188,9 @@ abstract class SimpleBloc<S> implements Bloc<S> {
     });
   }
 
-  FutureOr<Action> middleware(DispatchFunction dispatcher, S state, Action action) => action;
+  FutureOr<Action> middleware(
+          DispatchFunction dispatcher, S state, Action action) =>
+      action;
 
   S reducer(S state, Action action) => state;
 }

@@ -101,8 +101,7 @@ class ViewModelSubscriber<S, V> extends StatelessWidget {
 }
 
 /// Does the actual work for [ViewModelSubscriber].
-class _ViewModelStreamBuilder<S, V>
-    extends StatefulWidget {
+class _ViewModelStreamBuilder<S, V> extends StatefulWidget {
   final DispatchFunction dispatcher;
   final BehaviorSubject<S> stream;
   final ViewModelConverter<S, V> converter;
