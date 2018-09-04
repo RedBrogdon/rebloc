@@ -1,3 +1,5 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.4] - 8/27/2018.
 
-* TODO: Describe initial release.
+* First release in which I remembered to update the change log.
+* Two examples in place, plus the library itself.
+* Seems relatively stable.
