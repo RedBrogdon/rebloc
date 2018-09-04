@@ -1,8 +1,8 @@
 # rebloc
 
 A state management library for Flutter that combines aspects of Redux
-and BLoC (this readme assumes some familiarity with both. It's a
-personal experiment by [redbrogdon](https://github.com/redbrogdon),
+and BLoC (this readme assumes some familiarity with both). It's a
+personal project by [redbrogdon](https://github.com/redbrogdon),
 rather than an official library from the Flutter team.
 
 ## What's going on here
@@ -37,6 +37,11 @@ stream (meaning you can transform it, expand it, and do all sorts of
 other streamy goodness). The other is an abstract class,
 `SimpleBloc<StateType>`, that hides away interaction with the stream and
 provides a simple, functional interface.
+
+Middleware methods can perform side effects like calling out to REST
+endpoints and dispatching new actions, but reducers should work as pure
+functions in keeping with Redux core principles. Middleware are also
+allowed to cancel actions.
 
 ## Why does this exist?
 
