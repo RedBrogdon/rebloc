@@ -9,11 +9,9 @@ package manager.
 
 ## Adding rebloc to your project
 
-Add it to your `pubspec.yaml`:
+Add this line to the project dependencies in your `pubspec.yaml`:
 
 ```yaml
-dependencies
-
   rebloc: ^0.0.4
 ```
 
