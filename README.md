@@ -62,10 +62,13 @@ allowed to cancel actions.
 ## Why does this exist?
 
 State management is an open question for Flutter developers. I like
-the freedom of BLoCs, but the Redux pattern can offer things like
-easily composed reducers and middleware, great support for cross-cutting
-concerns like logging, and the potential for time-travel debugging if
-interest merits building those sorts of tools.
+the freedom of BLoCs, because a streaming interface can often turn what
+would be weird async patterns into easily understood transforms, maps,
+expands, and so on. On the other hand, I also like that the Redux
+pattern can offer things like easily composed reducers and middleware,
+great support for cross-cutting concerns like logging, and the potential
+for time-travel debugging if interest merits building those sorts of
+tools.
 
 Thus I'd like to see if I can combine the two and get the parts I like
 from both. Also, it's a chance to test out...
