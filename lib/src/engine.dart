@@ -8,7 +8,9 @@ import 'package:meta/meta.dart';
 import 'package:rxdart/subjects.dart' show BehaviorSubject;
 
 /// A Redux-style action. Apps change their overall state by dispatching actions
-/// to the [Store], where they are acted on by middleware and reducers.
+/// to the [Store], where they are acted on by middleware and reducers. Apps can
+/// use [afterward] to specify an [Action] that should be dispatched after the
+/// current one is reduced.
 abstract class Action {
   Action _next;
 

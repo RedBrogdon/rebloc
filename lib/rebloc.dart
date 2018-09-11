@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-library rebloc;
-
 /// Rebloc is a modified implementation of the [Redux](https://redux.js.org/)
 /// pattern using techniques more idiomatic to Flutter and Dart. Plus there's
 /// blocs.
@@ -47,6 +45,8 @@ library rebloc;
 /// - It provides to its builder method not only the most recent view model, but
 ///   also a reference to the [Store]'s `dispatcher` method, so new [Action]s
 ///   can be dispatched in response to user events like button presses.
+
+library rebloc;
 
 export 'src/engine.dart';
 export 'src/widgets.dart';
