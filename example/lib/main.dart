@@ -67,7 +67,7 @@ class DoubleAction extends Action {}
 class StringAction extends Action {
   final String newChar;
 
-  const StringAction(this.newChar);
+  StringAction(this.newChar);
 }
 
 class DescriptionAction extends Action {}

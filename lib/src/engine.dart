@@ -10,9 +10,19 @@ import 'package:rxdart/subjects.dart' show BehaviorSubject;
 /// A Redux-style action. Apps change their overall state by dispatching actions
 /// to the [Store], where they are acted on by middleware and reducers.
 abstract class Action {
-  const Action();
+  Action _next;
 
-  factory Action.cancelled() => const _CancelledAction();
+  Action();
+
+  void afterward(Action a) {
+    if (_next == null) {
+      _next = a;
+    } else {
+      _next.afterward(a);
+    }
+  }
+
+  factory Action.cancelled() => _CancelledAction();
 }
 
 /// An action that middleware methods can return in order to cancel (or
@@ -23,7 +33,8 @@ abstract class Action {
 /// reducer methods attempt to catch and act on it), a developer can in effect
 /// cancel actions via middleware.
 class _CancelledAction extends Action {
-  const _CancelledAction();
+  @override
+  void afterward(Action a) {}
 }
 
 /// A function that can dispatch an [Action] to a [Store].
@@ -80,26 +91,31 @@ class MiddlewareContext<S> {
 /// - Expose the [dispatcher] by which a new [Action] can be dispatched.
 class Store<S> {
   final _dispatchController = StreamController<MiddlewareContext<S>>();
-  final _reducerController = StreamController<Accumulator<S>>();
   final BehaviorSubject<S> states;
 
   Store({
     @required S initialState,
     List<Bloc<S>> blocs = const [],
   }) : states = BehaviorSubject<S>(seedValue: initialState) {
-    var reducerStream = _reducerController.stream;
     var dispatchStream = _dispatchController.stream.asBroadcastStream();
 
     for (Bloc<S> bloc in blocs) {
       dispatchStream = bloc.applyMiddleware(dispatchStream);
+    }
+
+    var reducerStream = dispatchStream.map<Accumulator<S>>(
+        (context) => Accumulator(context.action, states.value));
+
+    for (Bloc<S> bloc in blocs) {
       reducerStream = bloc.applyReducer(reducerStream);
     }
 
-    _reducerController.addStream(dispatchStream.map<Accumulator<S>>(
-        (context) => Accumulator(context.action, states.value)));
     reducerStream.listen((a) {
       assert(a.state != null);
       states.add(a.state);
+      if (a.action._next != null) {
+        dispatcher(a.action._next);
+      }
     });
   }
 

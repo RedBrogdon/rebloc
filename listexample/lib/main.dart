@@ -60,7 +60,7 @@ class StartStreamOfIncrementsAction extends Action {}
 class IncrementAction extends Action {
   final String name;
 
-  const IncrementAction(this.name);
+  IncrementAction(this.name);
 }
 
 class NamesAndCountsBloc implements Bloc<AppState> {
