@@ -168,7 +168,7 @@ ViewModelSubscriber<AppState, int>(
         ),
         RaisedButton(
           child: Text('Add 0'),
-          onPressed: () => dispatcher(AddNumberAction()),
+          onPressed: () => dispatcher(AddNumberAction(0)),
         ),
       ],
     ),
