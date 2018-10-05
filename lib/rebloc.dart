@@ -50,3 +50,4 @@ library rebloc;
 
 export 'src/engine.dart';
 export 'src/widgets.dart';
+export 'src/useful_blocs.dart';
