@@ -277,11 +277,6 @@ class DescriptionDisplayWidget extends StatelessWidget {
                 child: Text('Increment everything'),
                 onPressed: () => dispatcher(DescriptionAction()),
               ),
-              SizedBox(height: 8.0),
-              RaisedButton(
-                child: Text('Reset everything'),
-                onPressed: () => dispatcher(ResetAction()),
-              )
             ],
           ),
         );
@@ -297,25 +292,32 @@ class MyHomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Rebloc example')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Integer view model:', style: textTheme.subhead),
-              IntDisplayWidget(),
-              SizedBox(height: 24.0),
-              Text('Double view model:', style: textTheme.subhead),
-              DoubleDisplayWidget(),
-              SizedBox(height: 24.0),
-              Text('String view model:', style: textTheme.subhead),
-              StringDisplayWidget(),
-              SizedBox(height: 24.0),
-              Text('Combined view model:', style: textTheme.subhead),
-              DescriptionDisplayWidget(),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: ListView(
+          children: [
+            SizedBox(height: 16.0),
+            Text('Integer view model:', style: textTheme.subhead),
+            IntDisplayWidget(),
+            SizedBox(height: 24.0),
+            Text('Double view model:', style: textTheme.subhead),
+            DoubleDisplayWidget(),
+            SizedBox(height: 24.0),
+            Text('String view model:', style: textTheme.subhead),
+            StringDisplayWidget(),
+            SizedBox(height: 24.0),
+            Text('Combined view model:', style: textTheme.subhead),
+            DescriptionDisplayWidget(),
+            DispatchSubscriber<AppState>(
+              builder: (context, dispatcher) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      child: Text('Reset everything'),
+                      onPressed: () => dispatcher(ResetAction()),
+                    ),
+                  ),
+            ),
+          ],
         ),
       ),
     );

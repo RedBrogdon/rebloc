@@ -1,3 +1,10 @@
+## [0.0.7] - 10/7/2018.
+
+* Changed `StoreProvider` to always use `inheritFromWidgetOfExactType`.
+* Added `DispatchSubscriber`, a widget that subscribes to an ancestor
+  `StoreProvider`'s dispatch function and builds widgets that can call
+  it.
+
 ## [0.0.6] - 10/5/2018.
 
 * Added `useful_blocs.dart` to hold some built-in `Bloc`s that devs

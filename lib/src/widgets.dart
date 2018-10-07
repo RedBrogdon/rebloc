@@ -22,14 +22,10 @@ class StoreProvider<S> extends StatelessWidget {
   }) : super(key: key);
 
   static Store<S> of<S>(
-    BuildContext context, {
-    bool rebuildOnChange = false,
-  }) {
+    BuildContext context) {
     final Type type = _type<_InheritedStoreProvider<S>>();
 
-    Widget widget = rebuildOnChange
-        ? context.inheritFromWidgetOfExactType(type)
-        : context.ancestorWidgetOfExactType(type);
+    Widget widget = context.inheritFromWidgetOfExactType(type);
 
     if (widget == null) {
       throw Exception(
@@ -72,22 +68,24 @@ typedef Widget ViewModelWidgetBuilder<S, V>(
 typedef V ViewModelConverter<S, V>(S state);
 
 /// Transforms a stream of state objects found via [StoreProvider] into a stream
-/// of viewmodels, and builds a [Widget] each time a distinctly new view model
-/// is emitted.
+/// of view models, and builds a [Widget] each time a distinctly new view model
+/// is emitted by that stream.
 ///
 /// This class is designed to minimize the number of times its subtree is built.
 /// When a new state is emitted by [Store.states], it's converted into a
-/// viewmodel using the provided [converter]. If (And only if) that new instance
-/// is unequal to the previous one, the widget subtree is rebuilt using
+/// view model using the provided [converter]. If (And only if) that new
+/// instance is unequal to the previous one, the widget subtree is rebuilt using
 /// [builder]. Any state changes emitted by the [Store] that don't impact the
-/// viewmodel used by a particular [ViewModelSubscriber] are ignored by it.
+/// view model used by a particular [ViewModelSubscriber] are ignored by it.
 class ViewModelSubscriber<S, V> extends StatelessWidget {
   final ViewModelConverter<S, V> converter;
   final ViewModelWidgetBuilder<S, V> builder;
 
-  ViewModelSubscriber(
-      {@required this.converter, @required this.builder, Key key})
-      : super(key: key);
+  ViewModelSubscriber({
+    @required this.converter,
+    @required this.builder,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -163,5 +161,32 @@ class _ViewModelStreamBuilderState<S, V>
   @override
   Widget build(BuildContext context) {
     return widget.builder(context, widget.dispatcher, _latestViewModel);
+  }
+}
+
+/// Widget builder function that includes a [dispatcher] capable of dispatching
+/// an [Action] to an inherited [Store].
+typedef Widget DispatchWidgetBuilder(
+    BuildContext context, DispatchFunction dispatcher);
+
+/// Retrieves a [DispatcherFunction] from an ancestor [StoreProvider], and
+/// builds builds widgets that can use it.
+///
+/// [DispatchSubscriber] is essentially a [ViewModelSubscriber] without the view
+/// model part. It looks among its ancestors for a [Store] of the correct type,
+/// and then builds widgets via a builder function that accepts the [Store]'s
+/// dispatcher property as one of its parameters.
+class DispatchSubscriber<S> extends StatelessWidget {
+  DispatchSubscriber({
+    @required this.builder,
+    Key key,
+  }) : super(key: key);
+
+  final DispatchWidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    Store<S> store = StoreProvider.of<S>(context);
+    return builder(context, store.dispatcher);
   }
 }

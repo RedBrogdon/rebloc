@@ -14,7 +14,7 @@ package manager.
 Add this line to the project dependencies in your `pubspec.yaml`:
 
 ```yaml
-  rebloc: ^0.0.6
+  rebloc: ^0.0.7
 ```
 
 And use this import:
