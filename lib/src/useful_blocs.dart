@@ -17,6 +17,11 @@ import 'dart:async';
 import 'package:rebloc/rebloc.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// Debounces repeated dispatches of an [Action] or list of Actions.
+///
+/// This [Bloc] attaches directly to the middleware stream and uses RxDart's
+/// [debounce] method to pause or swallow actions with runtime types found in
+/// [actions] until [duration] has passed without one being dispatched.
 class DebouncerBloc<T> implements Bloc<T> {
   DebouncerBloc(
     this.actions, {
@@ -25,8 +30,11 @@ class DebouncerBloc<T> implements Bloc<T> {
         assert(actions != null),
         assert(actions.length > 0);
 
+  /// The duration to use when debouncing.
   final Duration duration;
 
+  /// The runtime types of Actions to be debounced. All other actions will pass
+  /// through without interference.
   final List<Type> actions;
 
   @override

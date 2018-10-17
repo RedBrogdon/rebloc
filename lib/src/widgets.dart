@@ -21,8 +21,7 @@ class StoreProvider<S> extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
-  static Store<S> of<S>(
-    BuildContext context) {
+  static Store<S> of<S>(BuildContext context) {
     final Type type = _type<_InheritedStoreProvider<S>>();
 
     Widget widget = context.inheritFromWidgetOfExactType(type);
@@ -186,7 +185,43 @@ class DispatchSubscriber<S> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Store<S> store = StoreProvider.of<S>(context);
+    final store = StoreProvider.of<S>(context);
     return builder(context, store.dispatcher);
+  }
+}
+
+/// Dispatches [action] to an inherited [Store] the first time it builds.
+///
+/// This widget is intended to help with actions that should be dispatched
+/// automatically the first time a particular widget comes onscreen. For
+/// example, an app may want to refresh certain data from a network when a
+/// widget displaying a cached copy of that data is first displayed.
+class FirstBuildDispatcher<S> extends StatefulWidget {
+  const FirstBuildDispatcher({
+    @required this.action,
+    @required this.child,
+    Key key,
+  }) : super(key: key);
+
+  final Action action;
+  final Widget child;
+
+  @override
+  _FirstBuildDispatcherState<S> createState() =>
+      _FirstBuildDispatcherState<S>();
+}
+
+class _FirstBuildDispatcherState<S> extends State<FirstBuildDispatcher<S>> {
+  bool hasDispatched = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!hasDispatched) {
+      hasDispatched = true;
+      final store = StoreProvider.of<S>(context);
+      store?.dispatcher(widget.action);
+    }
+
+    return widget.child;
   }
 }

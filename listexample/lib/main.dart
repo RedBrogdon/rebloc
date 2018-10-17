@@ -63,9 +63,19 @@ class IncrementAction extends Action {
   IncrementAction(this.name);
 }
 
+class LogNameAction extends Action {
+  LogNameAction(this.name);
+
+  final String name;
+}
+
 class NamesAndCountsBloc implements Bloc<AppState> {
   static const _names = ['Steve', 'Yu Yan', 'Sreela', 'Angelica', 'Guillaume'];
   static Random _rng = Random();
+
+  // A reference needs to be held here so the Timer doesn't get GCed. It's used
+  // to send periodic increment actions out.
+  // ignore: unused_field
   Timer _timer;
 
   @override
@@ -104,7 +114,12 @@ class NamesAndCountsBloc implements Bloc<AppState> {
 class LoggerBloc extends SimpleBloc<AppState> {
   @override
   Future<Action> middleware(dispatcher, state, action) async {
-    print('${action.runtimeType} dispatched. State: $state.');
+    if (action is LogNameAction) {
+      print('New name has appeared: ${action.name}.');
+    } else {
+      print('${action.runtimeType} dispatched. State: $state.');
+    }
+
     return action;
   }
 }
@@ -175,8 +190,12 @@ class MyHomePage extends StatelessWidget {
         builder: (context, dispatcher, viewModel) {
           final dateStr = _formatTime(DateTime.now());
 
-          final listRows = viewModel.names
-              .map<Widget>((name) => NameAndCount(name, key: ValueKey(name)));
+          final listRows = viewModel.names.map<Widget>((name) {
+            return FirstBuildDispatcher<AppState>(
+              action: LogNameAction(name),
+              child: NameAndCount(name, key: ValueKey(name)),
+            );
+          });
 
           return SingleChildScrollView(
             child: Column(
