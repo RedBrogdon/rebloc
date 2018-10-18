@@ -14,7 +14,7 @@ package manager.
 Add this line to the project dependencies in your `pubspec.yaml`:
 
 ```yaml
-  rebloc: ^0.0.7
+  rebloc: ^0.2.0
 ```
 
 And use this import:
@@ -80,7 +80,7 @@ from both. Also, it's a chance to test out some widgets...
 
 ## ViewModelSubscriber
 
-Also included in this library is a widget called `ViewModelSubscriber`.
+Included in this library is a widget called `ViewModelSubscriber`.
 It looks for an InheritedWidget called `StoreProvider` above it to
 find a stream of app state objects to subscribe to. Then it converts
 each object that comes through the stream into a view model object and
@@ -225,7 +225,7 @@ Two examples are included (a
 and a [list-based one](https://github.com/RedBrogdon/rebloc/tree/master/listexample))
 so you can see the library in action. It's also used in the (currently
 being built)
-[Voxxed Days conference app](https://github.com/redbrogdon/voxxedapp).
+[Voxxed Days conference app](https://github.com/devoxx/voxxedapp).
 
 ## Feedback
 
