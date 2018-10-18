@@ -1,3 +1,8 @@
+## [0.1.0] - 10/17/2018.
+
+* Added FirstBuildDispatcher, a new widget that will dispatch an action to an
+  ancestor Store the first time it's built.
+
 ## [0.0.7] - 10/7/2018.
 
 * Changed `StoreProvider` to always use `inheritFromWidgetOfExactType`.
