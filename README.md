@@ -32,21 +32,24 @@ store. Rather than using functional programming techniques to compose
 reducers and middleware from parts and wire everything up, however, it
 uses BLoCs.
 
-![img](https://i.imgur.com/aMuwpWS.png)
-
 The store defines a dispatch stream that accepts new actions and
 produces state objects in response. In between, BLoCs are wired into
-the stream to function as middleware and reducers. The stream for a
-simple, two-BLoC store might look like this, for example:
+the stream to function as middleware, reducers, and afterware. Afterware
+is essentially a second chance for Blocs to perform middleware-like
+tasks *after* the reducers have had their chance to update the app
+state. The stream for a simple, two-BLoC store might look like this, for
+example:
 
 ```
 Dispatch ->
   BloC #1 middleware ->
   BLoC #2 middleware ->
-  the action is converted into an accumulator (action and state together) ->
   BLoC #1 reducer ->
   BLoC #2 reducer ->
-  resulting state object is emitted by store
+  resulting state object is emitted by store ->
+  BLoC #1 reducer ->
+  BLoC #2 reducer ->
+
 ```
 
 There are two ways to implement BLoCs. The first is a basic
@@ -56,10 +59,10 @@ other streamy goodness). The other is an abstract class,
 `SimpleBloc<StateType>`, that hides away interaction with the stream and
 provides a simple, functional interface.
 
-Middleware methods can perform side effects like calling out to REST
-endpoints and dispatching new actions, but reducers should work as pure
-functions in keeping with Redux core principles. Middleware are also
-allowed to cancel actions.
+Middleware and afterware methods can perform side effects like calling
+out to REST endpoints and dispatching new actions, but reducers should
+work as pure functions in keeping with Redux core principles. Middleware
+and afterware are also allowed to cancel (or "swallow") actions.
 
 ## Why does this exist?
 
@@ -73,7 +76,7 @@ for time-travel debugging if interest merits building those sorts of
 tools.
 
 Thus I'd like to see if I can combine the two and get the parts I like
-from both. Also, it's a chance to test out...
+from both. Also, it's a chance to test out some widgets...
 
 ## ViewModelSubscriber
 
@@ -91,6 +94,20 @@ rebuilt and redrawn if that one particular bit of data changes. If
 you've got a list of complicated records, for example, you can use
 `ViewModelSubscriber` widgets to avoid rebuilding the entire list just
 because one field in one record changed.
+
+## ViewModelSubscriber
+
+`DispatchSubscriber` is a `ViewModelSubscriber` without the view model.
+If you have a piece of UI that just needs to dispatch an `Action` and
+doesn't need any actual data from the `Store`, `DispatchSubscriber` is
+your huckleberry.
+
+## FirstBuildDispatcher
+
+`FirstBuildDispatcher` automatically dispatches an `Action` to an
+ancestor `Store` the first time it's built. If you'd like to refresh
+some data from the network any time a particular widget is displayed,
+for example, `FirstDispatchBuilder` can help.
 
 ## Basic example
 

@@ -20,35 +20,41 @@ import 'package:rxdart/rxdart.dart';
 /// Debounces repeated dispatches of an [Action] or list of Actions.
 ///
 /// This [Bloc] attaches directly to the middleware stream and uses RxDart's
-/// [debounce] method to pause or swallow actions with runtime types found in
-/// [actions] until [duration] has passed without one being dispatched.
+/// [debounce] method to debounce [Action]s with runtime types contained in
+/// [actionTypes] for the given [duration].
 class DebouncerBloc<T> implements Bloc<T> {
   DebouncerBloc(
-    this.actions, {
+    this.actionTypes, {
     this.duration = const Duration(seconds: 1),
   })  : assert(duration != null),
-        assert(actions != null),
-        assert(actions.length > 0);
+        assert(actionTypes != null),
+        assert(actionTypes.length > 0);
 
   /// The duration to use when debouncing.
   final Duration duration;
 
   /// The runtime types of Actions to be debounced. All other actions will pass
   /// through without interference.
-  final List<Type> actions;
+  final List<Type> actionTypes;
 
   @override
-  Stream<MiddlewareContext<T>> applyMiddleware(
-      Stream<MiddlewareContext<T>> input) {
-    return MergeStream<MiddlewareContext<T>>([
-      input.where((c) => !actions.contains(c.action.runtimeType)),
-      Observable(input.where((c) => actions.contains(c.action.runtimeType)))
+  Stream<WareContext<T>> applyMiddleware(Stream<WareContext<T>> input) {
+    return MergeStream<WareContext<T>>([
+      input.where((c) => !actionTypes.contains(c.action.runtimeType)),
+      Observable(input.where((c) => actionTypes.contains(c.action.runtimeType)))
           .debounce(duration),
     ]);
   }
 
   @override
   Stream<Accumulator<T>> applyReducer(Stream<Accumulator<T>> input) {
+    // This Bloc makes no changes to app state.
+    return input;
+  }
+
+  @override
+  Stream<WareContext<T>> applyAfterware(Stream<WareContext<T>> input) {
+    // This Bloc takes no action after reducing is complete.
     return input;
   }
 }

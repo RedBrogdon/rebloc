@@ -4,7 +4,7 @@ description: |
   Redux and BLoC. Rebloc uses streams and BLoCs to compose
   middleware and reducers.
 
-version: 0.1.0
+version: 0.2.0
 author: Andrew Brogdon <brogdon+github@gmail.com>
 homepage: https://github.com/redbrogdon/rebloc
 

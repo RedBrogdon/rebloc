@@ -128,14 +128,29 @@ class DescriptionBloc extends SimpleBloc<AppState> {
 
 /// Logs each incoming action.
 class LoggerBloc extends SimpleBloc<AppState> {
+  AppState lastState;
+
   @override
   Future<Action> middleware(dispatcher, state, action) async {
-    print('${action.runtimeType} dispatched. State: $state.');
+    print('${action.runtimeType} dispatched.');
 
     // This is just to demonstrate that middleware can be async. In most cases,
     // you'll want to cancel or return immediately.
     return await Future.delayed(Duration.zero, () => action);
   }
+
+  @override
+  FutureOr<Action> afterware(DispatchFunction dispatcher, AppState state,
+      Action action) {
+    if (state != lastState) {
+      print('State just became: $state');
+      lastState = state;
+    }
+
+    return action;
+  }
+
+
 }
 
 /// Limits each of the three values in [AppState] to certain maximums. This

@@ -8,35 +8,21 @@ import 'package:meta/meta.dart';
 import 'package:rxdart/subjects.dart' show BehaviorSubject;
 
 /// A Redux-style action. Apps change their overall state by dispatching actions
-/// to the [Store], where they are acted on by middleware and reducers. Apps can
-/// use [afterward] to specify an [Action] that should be dispatched after the
-/// current one is reduced.
+/// to the [Store], where they are acted on by middleware, reducers, and
+/// afterware in that order.
 abstract class Action {
-  Action _next;
-
-  Action();
-
-  void afterward(Action a) {
-    if (_next == null) {
-      _next = a;
-    } else {
-      _next.afterward(a);
-    }
-  }
-
+  const Action();
   factory Action.cancelled() => _CancelledAction();
 }
 
-/// An action that middleware methods can return in order to cancel (or
-/// "swallow") an action already dispatched to their [Store]. Because rebloc
-/// uses a stream to track [Actions] through the dispatch->middleware->reducer
-/// pipeline, a middleware method should return something. By returning an
-/// instance of this class (and making sure that none of their middleware or
-/// reducer methods attempt to catch and act on it), a developer can in effect
-/// cancel actions via middleware.
+/// An action that middleware and afterware methods can return in order to
+/// cancel (or "swallow") an action already dispatched to their [Store]. Because
+/// rebloc uses a stream to track [Actions] through the
+/// dispatch->middleware->reducer pipeline, a middleware/afterware method should
+/// return something. By returning an instance of this class (which is private
+/// to this library), a developer can in effect cancel actions via middleware.
 class _CancelledAction extends Action {
-  @override
-  void afterward(Action a) {}
+  const _CancelledAction();
 }
 
 /// A function that can dispatch an [Action] to a [Store].
@@ -60,25 +46,26 @@ class Accumulator<S> {
   Accumulator<S> copyWith(S newState) => Accumulator<S>(this.action, newState);
 }
 
-/// The context in which a middleware function executes.
+/// The context in which a middleware or afterware function executes.
 ///
 /// In a manner similar to the streaming architecture used for reducers, [Store]
-/// offers each [Bloc] the chance to apply middleware functionality to incoming
-/// [Actions] by listening to the "dispatch" stream, which is of type
-/// `Stream<MiddlewareContext<S>>`.
+/// offers each [Bloc] the chance to apply middleware and afterware
+/// functionality to incoming [Actions] by listening to the "dispatch" stream,
+/// which is of type `Stream<WareContext<S>>`.
 ///
-/// Middleware functions can examine the incoming [action] and current [state]
-/// of the app, and dispatch new [Action]s using [dispatcher]. Afterward, they
-/// should emit a new [MiddlewareContext] for the next [Bloc].
-class MiddlewareContext<S> {
+/// Middleware and afterware functions can examine the incoming [action] and
+/// current [state] of the app and perform side effects (including dispatching
+/// new [Action]s using [dispatcher]. Afterward, they should emit a new
+/// [WareContext] for the next [Bloc].
+class WareContext<S> {
   final DispatchFunction dispatcher;
   final S state;
   final Action action;
 
-  const MiddlewareContext(this.dispatcher, this.state, this.action);
+  const WareContext(this.dispatcher, this.state, this.action);
 
-  MiddlewareContext<S> copyWith(Action newAction) =>
-      MiddlewareContext<S>(this.dispatcher, this.state, newAction);
+  WareContext<S> copyWith(Action newAction) =>
+      WareContext<S>(this.dispatcher, this.state, newAction);
 }
 
 /// A store for app state that manages the dispatch of incoming actions and
@@ -89,10 +76,11 @@ class MiddlewareContext<S> {
 /// - Create a controller for the dispatch/reduce stream using an [initialState]
 ///   value.
 /// - Wire each [Bloc] into the dispatch/reduce stream by calling its
-///   [applyMiddleware] and [applyReducers] methods.
+///   [applyMiddleware], [applyReducers], and [applyAfterware] methods.
 /// - Expose the [dispatcher] by which a new [Action] can be dispatched.
 class Store<S> {
-  final _dispatchController = StreamController<MiddlewareContext<S>>();
+  final _dispatchController = StreamController<WareContext<S>>();
+  final _afterwareController = StreamController<WareContext<S>>();
   final BehaviorSubject<S> states;
 
   Store({
@@ -100,9 +88,11 @@ class Store<S> {
     List<Bloc<S>> blocs = const [],
   }) : states = BehaviorSubject<S>(seedValue: initialState) {
     var dispatchStream = _dispatchController.stream.asBroadcastStream();
+    var afterwareStream = _afterwareController.stream.asBroadcastStream();
 
     for (Bloc<S> bloc in blocs) {
       dispatchStream = bloc.applyMiddleware(dispatchStream);
+      afterwareStream = bloc.applyAfterware(afterwareStream);
     }
 
     var reducerStream = dispatchStream.map<Accumulator<S>>(
@@ -115,39 +105,37 @@ class Store<S> {
     reducerStream.listen((a) {
       assert(a.state != null);
       states.add(a.state);
-      if (a.action._next != null) {
-        dispatcher(a.action._next);
-      }
+      _afterwareController.add(WareContext<S>(dispatcher, a.state, a.action));
     });
+
+    // Without something listening, the afterware won't be executed.
+    afterwareStream.listen((_){});
   }
 
-  // TODO(redbrogdon): Figure out how to guarantee that only one action is in
-  // the stream at a time. Also figure out if that's really necessary.
   get dispatcher => (Action action) => _dispatchController
-      .add(MiddlewareContext(dispatcher, states.value, action));
+      .add(WareContext(dispatcher, states.value, action));
 }
 
-/// A Business logic component that can apply middleware and reducer
-/// functionality to a [Store] by transforming the streams passed into its
-/// [applyMiddleware] and [applyReducer] methods.
+/// A Business logic component that can apply middleware, reducer, and
+/// afterware functionality to a [Store] by transforming the streams passed into
+/// its [applyMiddleware], [applyReducer], and [applyAfterware] methods.
 abstract class Bloc<S> {
-  Stream<MiddlewareContext<S>> applyMiddleware(
-      Stream<MiddlewareContext<S>> input);
+  Stream<WareContext<S>> applyMiddleware(
+      Stream<WareContext<S>> input);
 
   Stream<Accumulator<S>> applyReducer(Stream<Accumulator<S>> input);
+
+  Stream<WareContext<S>> applyAfterware(
+      Stream<WareContext<S>> input);
 }
 
-typedef Action MiddlewareFunction<S>(
-    DispatchFunction dispatcher, S state, Action action);
-typedef S ReducerFunction<S>(S state, Action action);
-
 /// A convenience [Bloc] class that handles the stream mapping bits for you.
-/// Subclasses can simply override the [middleware] and [reducer] getters to
-/// return their implementations.
+/// Subclasses can simply override [middleware], [reducer], and [afterware] to
+/// add their implementations.
 abstract class SimpleBloc<S> implements Bloc<S> {
   @override
-  Stream<MiddlewareContext<S>> applyMiddleware(
-      Stream<MiddlewareContext<S>> input) {
+  Stream<WareContext<S>> applyMiddleware(
+      Stream<WareContext<S>> input) {
     return input.asyncMap((context) async {
       return context.copyWith(
           await middleware(context.dispatcher, context.state, context.action));
@@ -162,8 +150,21 @@ abstract class SimpleBloc<S> implements Bloc<S> {
     });
   }
 
+  @override
+  Stream<WareContext<S>> applyAfterware(
+      Stream<WareContext<S>> input) {
+    return input.asyncMap((context) async {
+      return context.copyWith(
+          await afterware(context.dispatcher, context.state, context.action));
+    });
+  }
+
   FutureOr<Action> middleware(
-          DispatchFunction dispatcher, S state, Action action) =>
+      DispatchFunction dispatcher, S state, Action action) =>
+      action;
+
+  FutureOr<Action> afterware(
+      DispatchFunction dispatcher, S state, Action action) =>
       action;
 
   S reducer(S state, Action action) => state;

@@ -79,8 +79,8 @@ class NamesAndCountsBloc implements Bloc<AppState> {
   Timer _timer;
 
   @override
-  Stream<MiddlewareContext<AppState>> applyMiddleware(
-      Stream<MiddlewareContext<AppState>> input) {
+  Stream<WareContext<AppState>> applyMiddleware(
+      Stream<WareContext<AppState>> input) {
     input.listen((context) {
       if (context.action is StartStreamOfIncrementsAction) {
         _timer = Timer.periodic(
@@ -109,15 +109,32 @@ class NamesAndCountsBloc implements Bloc<AppState> {
       return accumulator;
     });
   }
+
+  @override
+  Stream<WareContext<AppState>> applyAfterware(
+      Stream<WareContext<AppState>> input) {
+    return input;
+  }
 }
 
 class LoggerBloc extends SimpleBloc<AppState> {
+  AppState lastState;
+
   @override
   Future<Action> middleware(dispatcher, state, action) async {
     if (action is LogNameAction) {
-      print('New name has appeared: ${action.name}.');
-    } else {
-      print('${action.runtimeType} dispatched. State: $state.');
+      print('New widget has appeared: ${action.name}.');
+    }
+
+    return action;
+  }
+
+  @override
+  FutureOr<Action> afterware(DispatchFunction dispatcher, AppState state,
+      Action action) {
+    if (state != lastState) {
+      print('State just became: $state');
+      lastState = state;
     }
 
     return action;
