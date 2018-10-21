@@ -115,7 +115,7 @@ class StringBloc extends SimpleBloc<AppState> {
 
 class DescriptionBloc extends SimpleBloc<AppState> {
   @override
-  Action middleware(dispatcher, state, action) {
+  FutureOr<Action> middleware(dispatcher, state, action) {
     if (action is DescriptionAction) {
       dispatcher(IntAction());
       dispatcher(DoubleAction());
@@ -149,8 +149,6 @@ class LoggerBloc extends SimpleBloc<AppState> {
 
     return action;
   }
-
-
 }
 
 /// Limits each of the three values in [AppState] to certain maximums. This
@@ -161,7 +159,7 @@ class LimitBloc extends SimpleBloc<AppState> {
   static const maxLength = 10;
 
   @override
-  Action middleware(
+  FutureOr<Action> middleware(
       DispatchFunction dispatcher, AppState state, Action action) {
     if ((action is IntAction && state.anInt == maxInt) ||
         (action is DoubleAction && state.aDouble == maxDouble) ||
