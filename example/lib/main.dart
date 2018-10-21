@@ -140,8 +140,8 @@ class LoggerBloc extends SimpleBloc<AppState> {
   }
 
   @override
-  FutureOr<Action> afterware(DispatchFunction dispatcher, AppState state,
-      Action action) {
+  FutureOr<Action> afterware(
+      DispatchFunction dispatcher, AppState state, Action action) {
     if (state != lastState) {
       print('State just became: $state');
       lastState = state;

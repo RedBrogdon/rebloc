@@ -8,4 +8,3 @@ class MockStore {
   final actions = <Action>[];
   void dispatcher(Action action) => actions.add(action);
 }
-

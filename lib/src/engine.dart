@@ -109,24 +109,22 @@ class Store<S> {
     });
 
     // Without something listening, the afterware won't be executed.
-    afterwareStream.listen((_){});
+    afterwareStream.listen((_) {});
   }
 
-  get dispatcher => (Action action) => _dispatchController
-      .add(WareContext(dispatcher, states.value, action));
+  get dispatcher => (Action action) =>
+      _dispatchController.add(WareContext(dispatcher, states.value, action));
 }
 
 /// A Business logic component that can apply middleware, reducer, and
 /// afterware functionality to a [Store] by transforming the streams passed into
 /// its [applyMiddleware], [applyReducer], and [applyAfterware] methods.
 abstract class Bloc<S> {
-  Stream<WareContext<S>> applyMiddleware(
-      Stream<WareContext<S>> input);
+  Stream<WareContext<S>> applyMiddleware(Stream<WareContext<S>> input);
 
   Stream<Accumulator<S>> applyReducer(Stream<Accumulator<S>> input);
 
-  Stream<WareContext<S>> applyAfterware(
-      Stream<WareContext<S>> input);
+  Stream<WareContext<S>> applyAfterware(Stream<WareContext<S>> input);
 }
 
 /// A convenience [Bloc] class that handles the stream mapping bits for you.
@@ -134,8 +132,7 @@ abstract class Bloc<S> {
 /// add their implementations.
 abstract class SimpleBloc<S> implements Bloc<S> {
   @override
-  Stream<WareContext<S>> applyMiddleware(
-      Stream<WareContext<S>> input) {
+  Stream<WareContext<S>> applyMiddleware(Stream<WareContext<S>> input) {
     return input.asyncMap((context) async {
       return context.copyWith(
           await middleware(context.dispatcher, context.state, context.action));
@@ -151,8 +148,7 @@ abstract class SimpleBloc<S> implements Bloc<S> {
   }
 
   @override
-  Stream<WareContext<S>> applyAfterware(
-      Stream<WareContext<S>> input) {
+  Stream<WareContext<S>> applyAfterware(Stream<WareContext<S>> input) {
     return input.asyncMap((context) async {
       return context.copyWith(
           await afterware(context.dispatcher, context.state, context.action));
@@ -160,11 +156,11 @@ abstract class SimpleBloc<S> implements Bloc<S> {
   }
 
   FutureOr<Action> middleware(
-      DispatchFunction dispatcher, S state, Action action) =>
+          DispatchFunction dispatcher, S state, Action action) =>
       action;
 
   FutureOr<Action> afterware(
-      DispatchFunction dispatcher, S state, Action action) =>
+          DispatchFunction dispatcher, S state, Action action) =>
       action;
 
   S reducer(S state, Action action) => state;
