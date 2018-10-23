@@ -4,6 +4,7 @@
 
 import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:matcher/matcher.dart';
 
 import 'mocks.dart';
 
@@ -15,9 +16,9 @@ void main() {
       final bloc = DescriptionBloc();
       final store = MockStore();
       await bloc.middleware(store.dispatcher, state, action);
-      assert(store.actions[0] is IntAction &&
-          store.actions[1] is DoubleAction &&
-          store.actions[2] is StringAction);
+      expect(store.actions[0], TypeMatcher<IntAction>());
+      expect(store.actions[1], TypeMatcher<DoubleAction>());
+      expect(store.actions[2], TypeMatcher<StringAction>());
     });
     test('DescriptionBloc returns identical action', () async {
       const state = AppState(0, 0.0, 'AAA');
@@ -25,7 +26,7 @@ void main() {
       final bloc = DescriptionBloc();
       final store = MockStore();
       final result = await bloc.middleware(store.dispatcher, state, action);
-      assert(identical(action, result));
+      expect(result, same(action));
     });
   });
 }

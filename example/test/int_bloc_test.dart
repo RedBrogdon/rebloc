@@ -12,18 +12,18 @@ void main() {
       final action = IntAction();
       final bloc = IntBloc();
       final result = bloc.reducer(state, action);
-      assert(result.anInt == 1 &&
-          result.aDouble == 1.0 &&
-          result.aString == 'XXX');
+      expect(result.anInt, 1);
+      expect(result.aDouble, 1.0);
+      expect(result.aString, 'XXX');
     });
     test('IntBloc resets correctly', () {
       const state = AppState(1, 1.0, 'XXX');
       final action = ResetAction();
       final bloc = IntBloc();
       final result = bloc.reducer(state, action);
-      assert(result.anInt == 0 &&
-          result.aDouble == 1.0 &&
-          result.aString == 'XXX');
+      expect(result.anInt, 0);
+      expect(result.aDouble, 1.0);
+      expect(result.aString, 'XXX');
     });
   });
 }

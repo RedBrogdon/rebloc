@@ -15,7 +15,7 @@ void main() {
       final bloc = LoggerBloc();
       final store = MockStore();
       final result = await bloc.middleware(store.dispatcher, state, action);
-      assert(identical(action, result));
+      expect(result, same(action));
     });
   });
   group('LoggerBloc afterware performs correctly.', () {
@@ -25,7 +25,7 @@ void main() {
       final bloc = LoggerBloc();
       final store = MockStore();
       final result = await bloc.afterware(store.dispatcher, state, action);
-      assert(identical(action, result));
+      expect(result, same(action));
     });
   });
 }

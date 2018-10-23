@@ -12,18 +12,18 @@ void main() {
       final action = StringAction('B');
       final bloc = StringBloc();
       final result = bloc.reducer(state, action);
-      assert(result.anInt == 1 &&
-          result.aDouble == 1.0 &&
-          result.aString == 'XXXB');
+      expect(result.anInt, 1);
+      expect(result.aDouble, 1.0);
+      expect(result.aString, 'XXXB');
     });
     test('StringBloc resets correctly', () {
       const state = AppState(1, 1.0, 'XXX');
       final action = ResetAction();
       final bloc = StringBloc();
       final result = bloc.reducer(state, action);
-      assert(result.anInt == 1 &&
-          result.aDouble == 1.0 &&
-          result.aString == 'AAA');
+      expect(result.anInt, 1);
+      expect(result.aDouble, 1.0);
+      expect(result.aString, 'AAA');
     });
   });
 }
