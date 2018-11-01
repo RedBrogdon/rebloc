@@ -47,8 +47,8 @@ Dispatch ->
   BLoC #1 reducer ->
   BLoC #2 reducer ->
   resulting state object is emitted by store ->
-  BLoC #1 reducer ->
-  BLoC #2 reducer ->
+  BLoC #1 afterware ->
+  BLoC #2 afterware ->
 
 ```
 
