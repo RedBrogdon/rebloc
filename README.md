@@ -49,7 +49,7 @@ Dispatch ->
   resulting state object is emitted by store ->
   BLoC #1 afterware ->
   BLoC #2 afterware ->
-
+  Done
 ```
 
 There are two ways to implement BLoCs. The first is a basic
