@@ -95,7 +95,7 @@ you've got a list of complicated records, for example, you can use
 `ViewModelSubscriber` widgets to avoid rebuilding the entire list just
 because one field in one record changed.
 
-## ViewModelSubscriber
+## DispatchSubscriber
 
 `DispatchSubscriber` is a `ViewModelSubscriber` without the view model.
 If you have a piece of UI that just needs to dispatch an `Action` and
