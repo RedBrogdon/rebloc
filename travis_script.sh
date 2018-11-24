@@ -1,6 +1,6 @@
 set -e
 
-flutter packages get
+flutter/bin/flutter packages get
 
 echo "== Testing rebloc library on Flutter's $FLUTTER_VERSION channel =="
 pushd lib
