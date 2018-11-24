@@ -1,8 +1,16 @@
 set -e
 
 echo "== Testing rebloc library on Flutter's $FLUTTER_VERSION channel =="
-flutter/bin/flutter analyze
-find lib/. test/. | grep "\.dart$" | xargs flutter/bin/flutter format -n
+pushd lib
+../flutter/bin/flutter analyze
+find . | grep "\.dart$" | xargs ../flutter/bin/flutter format -n
+popd
+
+pushd test
+../flutter/bin/flutter analyze
+find . | grep "\.dart$" | xargs ../flutter/bin/flutter format -n
+popd
+
 flutter/bin/flutter test
 
 echo "== Testing rebloc example on Flutter's $FLUTTER_VERSION channel =="
