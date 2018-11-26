@@ -32,7 +32,7 @@ typedef void DispatchFunction(Action action);
 ///
 /// [Store] offers each [Bloc] the opportunity to apply its own reducer
 /// functionality in response to incoming [Action]s by subscribing to the
-/// "reducer" stream, which is of type `<Stream<Accumulator<S>>`.
+/// "reducer" stream, which is of type `Stream<Accumulator<S>>`.
 ///
 /// A [Bloc] that does so is expected use the [Action] and [state] provided in
 /// any [Accumulator] it receives to calculate a new [state], then emit it in a
@@ -77,7 +77,7 @@ class WareContext<S> {
 ///   value.
 /// - Wire each [Bloc] into the dispatch/reduce stream by calling its
 ///   [applyMiddleware], [applyReducers], and [applyAfterware] methods.
-/// - Expose the [dispatcher] by which a new [Action] can be dispatched.
+/// - Expose the [dispatcher] with which a new [Action] can be dispatched.
 class Store<S> {
   final _dispatchController = StreamController<WareContext<S>>();
   final _afterwareController = StreamController<WareContext<S>>();
