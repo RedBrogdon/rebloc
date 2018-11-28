@@ -34,7 +34,7 @@ typedef void DispatchFunction(Action action);
 /// functionality in response to incoming [Action]s by subscribing to the
 /// "reducer" stream, which is of type `Stream<Accumulator<S>>`.
 ///
-/// A [Bloc] that does so is expected use the [Action] and [state] provided in
+/// A [Bloc] that does so is expected to use the [Action] and [state] provided in
 /// any [Accumulator] it receives to calculate a new [state], then emit it in a
 /// new Accumulator with the original action and new [state].
 class Accumulator<S> {
