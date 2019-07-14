@@ -12,12 +12,12 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.1.6
-  pedantic: ^1.7.0
   rxdart: ^0.22.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: ^1.7.0
   test: ^1.6.3
 
 environment:

@@ -4,13 +4,13 @@ description: An example showing how the rebloc library works.
 dependencies:
   flutter:
     sdk: flutter
-  pedantic: ^1.7.0
   rebloc:
     path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: ^1.7.0
   test: ^1.6.3
 
 environment:
@@ -18,4 +18,3 @@ environment:
 
 flutter:
   uses-material-design: true
-
