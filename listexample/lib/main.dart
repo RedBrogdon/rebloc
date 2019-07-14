@@ -35,7 +35,7 @@ void main() {
     ),
   );
 
-  store.dispatcher(StartStreamOfIncrementsAction());
+  store.dispatch(StartStreamOfIncrementsAction());
 }
 
 class AppState {

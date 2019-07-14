@@ -78,7 +78,7 @@ class WareContext<S> {
 ///   value.
 /// - Wire each [Bloc] into the dispatch/reduce stream by calling its
 ///   [applyMiddleware], [applyReducers], and [applyAfterware] methods.
-/// - Expose the [dispatcher] with which a new [Action] can be dispatched.
+/// - Expose the [dispatch] method with which a new [Action] can be dispatched.
 class Store<S> {
   final _dispatchController = StreamController<WareContext<S>>();
   final _afterwareController = StreamController<WareContext<S>>();
@@ -106,17 +106,15 @@ class Store<S> {
     reducerStream.listen((a) {
       assert(a.state != null);
       states.add(a.state);
-      _afterwareController.add(WareContext<S>(dispatcher, a.state, a.action));
+      _afterwareController.add(WareContext<S>(dispatch, a.state, a.action));
     });
 
     // Without something listening, the afterware won't be executed.
     afterwareStream.listen((_) {});
   }
 
-  DispatchFunction get dispatcher => (action) => dispatch(action);
-
   void dispatch(Action action) {
-    _dispatchController.add(WareContext(dispatcher, states.value, action));
+    _dispatchController.add(WareContext(dispatch, states.value, action));
   }
 }
 

@@ -90,7 +90,7 @@ class ViewModelSubscriber<S, V> extends StatelessWidget {
   Widget build(BuildContext context) {
     Store<S> store = StoreProvider.of<S>(context);
     return _ViewModelStreamBuilder<S, V>(
-        dispatcher: store.dispatcher,
+        dispatcher: store.dispatch,
         stream: store.states,
         converter: converter,
         builder: builder);
@@ -186,7 +186,7 @@ class DispatchSubscriber<S> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final store = StoreProvider.of<S>(context);
-    return builder(context, store.dispatcher);
+    return builder(context, store.dispatch);
   }
 }
 
@@ -219,7 +219,7 @@ class _FirstBuildDispatcherState<S> extends State<FirstBuildDispatcher<S>> {
     if (!hasDispatched) {
       hasDispatched = true;
       final store = StoreProvider.of<S>(context);
-      store?.dispatcher(widget.action);
+      store?.dispatch(widget.action);
     }
 
     return widget.child;

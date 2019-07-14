@@ -57,7 +57,7 @@ void main() {
         ],
       );
 
-      store.dispatcher(IncrementAction());
+      store.dispatch(IncrementAction());
 
       expect(
         store.states,
@@ -76,9 +76,9 @@ void main() {
         ],
       );
 
-      store.dispatcher(IncrementAction());
-      store.dispatcher(IncrementAction());
-      store.dispatcher(IncrementAction());
+      store.dispatch(IncrementAction());
+      store.dispatch(IncrementAction());
+      store.dispatch(IncrementAction());
 
       expect(
         store.states,
@@ -99,11 +99,11 @@ void main() {
         ],
       );
 
-      store.dispatcher(IncrementAction());
-      store.dispatcher(IncrementAction());
-      store.dispatcher(SquareAction());
-      store.dispatcher(IncrementAction());
-      store.dispatcher(SquareAction());
+      store.dispatch(IncrementAction());
+      store.dispatch(IncrementAction());
+      store.dispatch(SquareAction());
+      store.dispatch(IncrementAction());
+      store.dispatch(SquareAction());
 
       expect(
         store.states,
