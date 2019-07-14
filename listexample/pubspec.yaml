@@ -2,21 +2,19 @@ name: listexample
 description: An example showing how rebloc can minimize list rebuilds.
 
 dependencies:
-
   rebloc:
     path: ../
-  intl: ^0.15.7
-
+  intl: ^0.15.8
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  test: ^1.5.1
+  test: ^1.6.3
   flutter_test:
     sdk: flutter
 
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.4.0 <3.0.0'
 
 flutter:
   uses-material-design: true

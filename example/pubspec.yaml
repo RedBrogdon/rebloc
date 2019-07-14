@@ -2,20 +2,18 @@ name: example
 description: An example showing how the rebloc library works.
 
 dependencies:
-
   rebloc:
     path: ../
-
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  test: ^1.5.1
+  test: ^1.6.3
   flutter_test:
     sdk: flutter
 
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.4.0 <3.0.0'
 
 flutter:
   uses-material-design: true

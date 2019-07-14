@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Action;
 import 'package:rebloc/rebloc.dart';
 
 String _formatTime(DateTime time) {
@@ -323,12 +323,12 @@ class MyHomePage extends StatelessWidget {
             DescriptionDisplayWidget(),
             DispatchSubscriber<AppState>(
               builder: (context, dispatcher) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RaisedButton(
-                      child: Text('Reset everything'),
-                      onPressed: () => dispatcher(ResetAction()),
-                    ),
-                  ),
+                padding: const EdgeInsets.all(8.0),
+                child: RaisedButton(
+                  child: Text('Reset everything'),
+                  onPressed: () => dispatcher(ResetAction()),
+                ),
+              ),
             ),
           ],
         ),

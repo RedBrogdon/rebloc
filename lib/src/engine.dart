@@ -86,7 +86,7 @@ class Store<S> {
   Store({
     @required S initialState,
     List<Bloc<S>> blocs = const [],
-  }) : states = BehaviorSubject<S>(seedValue: initialState) {
+  }) : states = BehaviorSubject<S>.seeded(initialState) {
     var dispatchStream = _dispatchController.stream.asBroadcastStream();
     var afterwareStream = _afterwareController.stream.asBroadcastStream();
 
