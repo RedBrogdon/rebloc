@@ -2,15 +2,16 @@ name: example
 description: An example showing how the rebloc library works.
 
 dependencies:
-  rebloc:
-    path: ../
   flutter:
     sdk: flutter
+  pedantic: ^1.7.0
+  rebloc:
+    path: ../
 
 dev_dependencies:
-  test: ^1.6.3
   flutter_test:
     sdk: flutter
+  test: ^1.6.3
 
 environment:
   sdk: '>=2.4.0 <3.0.0'

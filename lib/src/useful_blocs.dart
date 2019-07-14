@@ -28,7 +28,7 @@ class DebouncerBloc<T> implements Bloc<T> {
     this.duration = const Duration(seconds: 1),
   })  : assert(duration != null),
         assert(actionTypes != null),
-        assert(actionTypes.length > 0);
+        assert(actionTypes.isNotEmpty);
 
   /// The duration to use when debouncing.
   final Duration duration;

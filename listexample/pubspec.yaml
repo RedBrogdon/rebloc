@@ -2,11 +2,12 @@ name: listexample
 description: An example showing how rebloc can minimize list rebuilds.
 
 dependencies:
-  rebloc:
-    path: ../
-  intl: ^0.15.8
   flutter:
     sdk: flutter
+  intl: ^0.15.8
+  pedantic: ^1.7.0
+  rebloc:
+    path: ../
 
 dev_dependencies:
   test: ^1.6.3

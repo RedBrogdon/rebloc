@@ -18,9 +18,10 @@ abstract class Action {
 /// An action that middleware and afterware methods can return in order to
 /// cancel (or "swallow") an action already dispatched to their [Store]. Because
 /// rebloc uses a stream to track [Actions] through the
-/// dispatch->middleware->reducer pipeline, a middleware/afterware method should
-/// return something. By returning an instance of this class (which is private
-/// to this library), a developer can in effect cancel actions via middleware.
+/// dispatch->middleware->reducer->afterware pipeline, a middleware/afterware
+/// method should return something. By returning an instance of this class
+/// (which is private to this library), a developer can in effect cancel actions
+/// via middleware.
 class _CancelledAction extends Action {
   const _CancelledAction();
 }
@@ -112,8 +113,11 @@ class Store<S> {
     afterwareStream.listen((_) {});
   }
 
-  get dispatcher => (Action action) =>
-      _dispatchController.add(WareContext(dispatcher, states.value, action));
+  DispatchFunction get dispatcher => (action) => dispatch(action);
+
+  void dispatch(Action action) {
+    _dispatchController.add(WareContext(dispatcher, states.value, action));
+  }
 }
 
 /// A Business logic component that can apply middleware, reducer, and

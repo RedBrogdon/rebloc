@@ -26,11 +26,11 @@ void main() {
   );
 
   runApp(
-    new MaterialApp(
+    MaterialApp(
       title: 'Rebloc List Example',
       home: StoreProvider<AppState>(
         store: store,
-        child: new MyHomePage(),
+        child: MyHomePage(),
       ),
     ),
   );
@@ -178,7 +178,7 @@ class NameListViewModel {
   const NameListViewModel(this.names);
 
   @override
-  bool operator ==(other) {
+  bool operator ==(dynamic other) {
     if (names.length != other.names.length) {
       return false;
     }

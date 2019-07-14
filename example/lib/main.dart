@@ -15,25 +15,27 @@ String _formatTime(DateTime time) {
   return '$hours:$minutes:$seconds.$milliseconds';
 }
 
-void main() => runApp(
-      new MaterialApp(
-        title: 'Rebloc Example',
-        home: StoreProvider<AppState>(
-          store: Store<AppState>(
-            initialState: AppState.initialState(),
-            blocs: [
-              LoggerBloc(),
-              LimitBloc(),
-              IntBloc(),
-              DoubleBloc(),
-              StringBloc(),
-              DescriptionBloc(),
-            ],
-          ),
-          child: new MyHomePage(),
+void main() {
+  runApp(
+    MaterialApp(
+      title: 'Rebloc Example',
+      home: StoreProvider<AppState>(
+        store: Store<AppState>(
+          initialState: AppState.initialState(),
+          blocs: [
+            LoggerBloc(),
+            LimitBloc(),
+            IntBloc(),
+            DoubleBloc(),
+            StringBloc(),
+            DescriptionBloc(),
+          ],
         ),
+        child: MyHomePage(),
       ),
-    );
+    ),
+  );
+}
 
 class AppState {
   final int anInt;
@@ -262,7 +264,7 @@ class DescriptionViewModel {
   DescriptionViewModel(AppState state) : description = state.toString() + "!";
 
   @override
-  bool operator ==(other) {
+  bool operator ==(dynamic other) {
     return description == other.description;
   }
 

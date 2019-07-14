@@ -9,15 +9,16 @@ author: Andrew Brogdon <brogdon+github@gmail.com>
 homepage: https://github.com/redbrogdon/rebloc
 
 dependencies:
-  rxdart: ^0.22.0
-  meta: ^1.1.6
   flutter:
     sdk: flutter
+  meta: ^1.1.6
+  pedantic: ^1.7.0
+  rxdart: ^0.22.0
 
 dev_dependencies:
-  test: ^1.6.3
   flutter_test:
     sdk: flutter
+  test: ^1.6.3
 
 environment:
   sdk: '>=2.4.0 <3.0.0'

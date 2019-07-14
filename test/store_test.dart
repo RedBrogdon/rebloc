@@ -61,12 +61,10 @@ void main() {
 
       expect(
         store.states,
-        emitsInOrder(
-          [
-            IntStateMatcher(IntState(0)),
-            IntStateMatcher(IntState(1)),
-          ],
-        ),
+        emitsInOrder(<dynamic>[
+          IntStateMatcher(IntState(0)),
+          IntStateMatcher(IntState(1)),
+        ]),
       );
     });
 
@@ -84,14 +82,12 @@ void main() {
 
       expect(
         store.states,
-        emitsInOrder(
-          [
-            IntStateMatcher(IntState(0)),
-            IntStateMatcher(IntState(1)),
-            IntStateMatcher(IntState(2)),
-            IntStateMatcher(IntState(3)),
-          ],
-        ),
+        emitsInOrder(<dynamic>[
+          IntStateMatcher(IntState(0)),
+          IntStateMatcher(IntState(1)),
+          IntStateMatcher(IntState(2)),
+          IntStateMatcher(IntState(3)),
+        ]),
       );
     });
 
@@ -111,16 +107,14 @@ void main() {
 
       expect(
         store.states,
-        emitsInOrder(
-          [
-            IntStateMatcher(IntState(0)),
-            IntStateMatcher(IntState(1)),
-            IntStateMatcher(IntState(2)),
-            IntStateMatcher(IntState(4)),
-            IntStateMatcher(IntState(5)),
-            IntStateMatcher(IntState(25)),
-          ],
-        ),
+        emitsInOrder(<dynamic>[
+          IntStateMatcher(IntState(0)),
+          IntStateMatcher(IntState(1)),
+          IntStateMatcher(IntState(2)),
+          IntStateMatcher(IntState(4)),
+          IntStateMatcher(IntState(5)),
+          IntStateMatcher(IntState(25)),
+        ]),
       );
     });
   });

@@ -144,7 +144,7 @@ class _ViewModelStreamBuilderState<S, V>
   /// unsubscribe from the previous widget's stream and subscribe to the new
   /// one.
   @override
-  void didUpdateWidget(_ViewModelStreamBuilder oldWidget) {
+  void didUpdateWidget(_ViewModelStreamBuilder<S, V> oldWidget) {
     super.didUpdateWidget(oldWidget);
     _subscription.cancel();
     _subscribe();
