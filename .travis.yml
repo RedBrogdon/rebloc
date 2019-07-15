@@ -11,8 +11,8 @@ addons:
 git:
   depth: 3
 env:
+  - FLUTTER_VERSION=stable
   - FLUTTER_VERSION=beta
-  - FLUTTER_VERSION=dev
 matrix:
   allow_failures:
     - env: FLUTTER_VERSION=dev
