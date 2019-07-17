@@ -14,7 +14,7 @@ package manager.
 Add this line to the project dependencies in your `pubspec.yaml`:
 
 ```yaml
-  rebloc: ^0.2.1
+rebloc: ^0.2.1
 ```
 
 And use this import:
@@ -218,14 +218,13 @@ FutureOr<Action> middleware(
 }
 ```
 
-## Examples
+## Example app
 
-Two examples are included (a
-[basic one](https://github.com/RedBrogdon/rebloc/tree/master/example),
-and a [list-based one](https://github.com/RedBrogdon/rebloc/tree/master/listexample))
-so you can see the library in action. It's also used in the (currently
-being built)
-[Voxxed Days conference app](https://github.com/devoxx/voxxedapp).
+An [example app](https://github.com/RedBrogdon/rebloc/tree/master/example)
+is included in the repo to illustrate what real-world use of rebloc might
+look like. It includes two demos: a simple, "hit a button to dispatch an 
+action" screen and a list-based demo that shows a Bloc dispatching a
+steady stream of actions on its own.
 
 ## Feedback
 

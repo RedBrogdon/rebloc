@@ -12,6 +12,7 @@ import 'package:rxdart/subjects.dart' show BehaviorSubject;
 /// afterware in that order.
 abstract class Action {
   const Action();
+
   factory Action.cancelled() => _CancelledAction();
 }
 
@@ -37,7 +38,9 @@ typedef void DispatchFunction(Action action);
 ///
 /// A [Bloc] that does so is expected to use the [Action] and [state] provided in
 /// any [Accumulator] it receives to calculate a new [state], then emit it in a
-/// new Accumulator with the original action and new [state].
+/// new Accumulator with the original action and new [state]. Alternatively, if
+/// the Bloc doesn't want to make a change to the state, it can simply return
+/// the Accumulator it was given.
 class Accumulator<S> {
   final Action action;
   final S state;
@@ -83,11 +86,13 @@ class Store<S> {
   final _dispatchController = StreamController<WareContext<S>>();
   final _afterwareController = StreamController<WareContext<S>>();
   final BehaviorSubject<S> states;
+  final List<Bloc> _blocs;
 
   Store({
     @required S initialState,
     List<Bloc<S>> blocs = const [],
-  }) : states = BehaviorSubject<S>.seeded(initialState) {
+  })  : states = BehaviorSubject<S>.seeded(initialState),
+        _blocs = blocs {
     var dispatchStream = _dispatchController.stream.asBroadcastStream();
     var afterwareStream = _afterwareController.stream.asBroadcastStream();
 
@@ -116,9 +121,13 @@ class Store<S> {
   void dispatch(Action action) {
     _dispatchController.add(WareContext(dispatch, states.value, action));
   }
+
+  /// Invokes the dispose method on each Bloc, so they can deallocate/close any
+  /// long-lived resources.
+  void dispose() => _blocs.forEach((b) => b.dispose());
 }
 
-/// A Business logic component that can apply middleware, reducer, and
+/// A business logic component that can apply middleware, reducer, and
 /// afterware functionality to a [Store] by transforming the streams passed into
 /// its [applyMiddleware], [applyReducer], and [applyAfterware] methods.
 abstract class Bloc<S> {
@@ -127,6 +136,8 @@ abstract class Bloc<S> {
   Stream<Accumulator<S>> applyReducer(Stream<Accumulator<S>> input);
 
   Stream<WareContext<S>> applyAfterware(Stream<WareContext<S>> input);
+
+  void dispose();
 }
 
 /// A convenience [Bloc] class that handles the stream mapping bits for you.
@@ -166,4 +177,7 @@ abstract class SimpleBloc<S> implements Bloc<S> {
       action;
 
   S reducer(S state, Action action) => state;
+
+  @mustCallSuper
+  void dispose() {}
 }

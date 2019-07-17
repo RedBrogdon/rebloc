@@ -5,51 +5,22 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:example/utils.dart';
 import 'package:flutter/material.dart' hide Action, Accumulator;
 import 'package:rebloc/rebloc.dart';
 
-String _formatTime(DateTime time) {
-  String hours = time.hour.toString().padLeft(2, '0');
-  String minutes = time.minute.toString().padLeft(2, '0');
-  String seconds = time.second.toString().padLeft(2, '0');
-  String milliseconds = time.millisecond.toString().padLeft(3, '0');
-  return '$hours:$minutes:$seconds.$milliseconds';
-}
-
-void main() {
-  final store = Store<AppState>(
-    initialState: AppState.initialState(),
-    blocs: [
-      LoggerBloc(),
-      NamesAndCountsBloc(),
-    ],
-  );
-
-  runApp(
-    MaterialApp(
-      title: 'Rebloc List Example',
-      home: StoreProvider<AppState>(
-        store: store,
-        child: MyHomePage(),
-      ),
-    ),
-  );
-
-  store.dispatch(StartStreamOfIncrementsAction());
-}
-
-class AppState {
+class ListAppState {
   final Map<String, int> namesAndCounts;
 
-  const AppState(this.namesAndCounts);
+  const ListAppState(this.namesAndCounts);
 
-  const AppState.initialState()
+  const ListAppState.initialState()
       : namesAndCounts = const {
           'Steve': 1,
         };
 
-  AppState copyWith(Map<String, int> newData) {
-    return AppState(Map.from(this.namesAndCounts)..addAll(newData));
+  ListAppState copyWith(Map<String, int> newData) {
+    return ListAppState(Map.from(this.namesAndCounts)..addAll(newData));
   }
 
   String toString() => namesAndCounts.toString();
@@ -69,7 +40,7 @@ class LogNameAction extends Action {
   final String name;
 }
 
-class NamesAndCountsBloc implements Bloc<AppState> {
+class NamesAndCountsBloc implements Bloc<ListAppState> {
   static const _names = ['Steve', 'Yu Yan', 'Sreela', 'Angelica', 'Guillaume'];
   static Random _rng = Random();
 
@@ -79,8 +50,8 @@ class NamesAndCountsBloc implements Bloc<AppState> {
   Timer _timer;
 
   @override
-  Stream<WareContext<AppState>> applyMiddleware(
-      Stream<WareContext<AppState>> input) {
+  Stream<WareContext<ListAppState>> applyMiddleware(
+      Stream<WareContext<ListAppState>> input) {
     input.listen((context) {
       if (context.action is StartStreamOfIncrementsAction) {
         _timer = Timer.periodic(
@@ -94,8 +65,8 @@ class NamesAndCountsBloc implements Bloc<AppState> {
   }
 
   @override
-  Stream<Accumulator<AppState>> applyReducer(
-      Stream<Accumulator<AppState>> input) {
+  Stream<Accumulator<ListAppState>> applyReducer(
+      Stream<Accumulator<ListAppState>> input) {
     return input.map((accumulator) {
       if (accumulator.action is IncrementAction) {
         String name = (accumulator.action as IncrementAction).name;
@@ -111,14 +82,17 @@ class NamesAndCountsBloc implements Bloc<AppState> {
   }
 
   @override
-  Stream<WareContext<AppState>> applyAfterware(
-      Stream<WareContext<AppState>> input) {
+  Stream<WareContext<ListAppState>> applyAfterware(
+      Stream<WareContext<ListAppState>> input) {
     return input;
   }
+
+  @override
+  void dispose() {}
 }
 
-class LoggerBloc extends SimpleBloc<AppState> {
-  AppState lastState;
+class LoggerBloc extends SimpleBloc<ListAppState> {
+  ListAppState lastState;
 
   @override
   Future<Action> middleware(dispatcher, state, action) async {
@@ -131,7 +105,7 @@ class LoggerBloc extends SimpleBloc<AppState> {
 
   @override
   FutureOr<Action> afterware(
-      DispatchFunction dispatcher, AppState state, Action action) {
+      DispatchFunction dispatcher, ListAppState state, Action action) {
     if (state != lastState) {
       print('State just became: $state');
       lastState = state;
@@ -148,10 +122,10 @@ class NameAndCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelSubscriber<AppState, int>(
+    return ViewModelSubscriber<ListAppState, int>(
       converter: (state) => state.namesAndCounts[name],
       builder: (context, dispatcher, viewModel) {
-        final dateStr = _formatTime(DateTime.now());
+        final dateStr = formatTime(DateTime.now());
 
         return Align(
           alignment: Alignment.centerLeft,
@@ -196,35 +170,44 @@ class NameListViewModel {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class ListExamplePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Rebloc list example')),
-      body: ViewModelSubscriber<AppState, NameListViewModel>(
-        converter: (state) =>
-            NameListViewModel(state.namesAndCounts.keys.toList()),
-        builder: (context, dispatcher, viewModel) {
-          final dateStr = _formatTime(DateTime.now());
+    return StoreProvider<ListAppState>(
+      store: Store<ListAppState>(
+        initialState: ListAppState.initialState(),
+        blocs: [
+          LoggerBloc(),
+          NamesAndCountsBloc(),
+        ],
+      ),
+      child: FirstBuildDispatcher<ListAppState>(
+        action: StartStreamOfIncrementsAction(),
+        child: ViewModelSubscriber<ListAppState, NameListViewModel>(
+          converter: (state) =>
+              NameListViewModel(state.namesAndCounts.keys.toList()),
+          builder: (context, dispatcher, viewModel) {
+            final dateStr = formatTime(DateTime.now());
 
-          final listRows = viewModel.names.map<Widget>((name) {
-            return FirstBuildDispatcher<AppState>(
-              action: LogNameAction(name),
-              child: NameAndCount(name, key: ValueKey(name)),
+            final listRows = viewModel.names.map<Widget>((name) {
+              return FirstBuildDispatcher<ListAppState>(
+                action: LogNameAction(name),
+                child: NameAndCount(name, key: ValueKey(name)),
+              );
+            });
+
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 16.0),
+                  Text('Rebuilt at $dateStr'),
+                  SizedBox(height: 16.0),
+                ]..addAll(listRows),
+              ),
             );
-          });
-
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 16.0),
-                Text('Rebuilt at $dateStr'),
-                SizedBox(height: 16.0),
-              ]..addAll(listRows),
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }

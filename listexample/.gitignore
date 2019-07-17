@@ -1,9 +1,0 @@
-.dart_tool/
-.packages
-.pub/
-.idea
-.atom
-.vscode
-.flutter-plugins
-build/
-*.iml

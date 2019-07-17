@@ -39,6 +39,11 @@ class DebouncerBloc<T> implements Bloc<T> {
 
   @override
   Stream<WareContext<T>> applyMiddleware(Stream<WareContext<T>> input) {
+    // This rather complicated-looking statement splits the incoming stream of
+    // Actions into two streams. Actions that match the types in [actionTypes]
+    // go into one, and all other actions go into the other. The stream that
+    // contains the matching actions is then debounced using the provided
+    // Duration.
     return MergeStream<WareContext<T>>([
       input.where((c) => !actionTypes.contains(c.action.runtimeType)),
       Observable(input.where((c) => actionTypes.contains(c.action.runtimeType)))
@@ -56,5 +61,10 @@ class DebouncerBloc<T> implements Bloc<T> {
   Stream<WareContext<T>> applyAfterware(Stream<WareContext<T>> input) {
     // This Bloc takes no action after reducing is complete.
     return input;
+  }
+
+  @override
+  void dispose() {
+    // Nothing to dispose here.
   }
 }
