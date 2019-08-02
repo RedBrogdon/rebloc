@@ -44,9 +44,6 @@ class NamesAndCountsBloc implements Bloc<ListAppState> {
   static const _names = ['Steve', 'Yu Yan', 'Sreela', 'Angelica', 'Guillaume'];
   static Random _rng = Random();
 
-  // A reference needs to be held here so the Timer doesn't get GCed. It's used
-  // to send periodic increment actions out.
-  // ignore: unused_field
   Timer _timer;
 
   @override
@@ -54,6 +51,7 @@ class NamesAndCountsBloc implements Bloc<ListAppState> {
       Stream<WareContext<ListAppState>> input) {
     input.listen((context) {
       if (context.action is StartStreamOfIncrementsAction) {
+        _timer?.cancel();
         _timer = Timer.periodic(
             Duration(seconds: 3),
             (_) => context.dispatcher(
@@ -88,7 +86,10 @@ class NamesAndCountsBloc implements Bloc<ListAppState> {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    print('Disposing NamesAndCountsBloc!');
+    _timer.cancel();
+  }
 }
 
 class LoggerBloc extends SimpleBloc<ListAppState> {
@@ -181,29 +182,26 @@ class ListExamplePage extends StatelessWidget {
           NamesAndCountsBloc(),
         ],
       ),
+      disposeStore: true,
       child: FirstBuildDispatcher<ListAppState>(
         action: StartStreamOfIncrementsAction(),
         child: ViewModelSubscriber<ListAppState, NameListViewModel>(
           converter: (state) =>
               NameListViewModel(state.namesAndCounts.keys.toList()),
           builder: (context, dispatcher, viewModel) {
-            final dateStr = formatTime(DateTime.now());
-
-            final listRows = viewModel.names.map<Widget>((name) {
-              return FirstBuildDispatcher<ListAppState>(
-                action: LogNameAction(name),
-                child: NameAndCount(name, key: ValueKey(name)),
-              );
-            });
-
             return SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 16.0),
-                  Text('Rebuilt at $dateStr'),
+                  Text('Rebuilt at ${formatTime(DateTime.now())}'),
                   SizedBox(height: 16.0),
-                ]..addAll(listRows),
+                  for (final name in viewModel.names)
+                    FirstBuildDispatcher<ListAppState>(
+                      action: LogNameAction(name),
+                      child: NameAndCount(name, key: ValueKey(name)),
+                    ),
+                ],
               ),
             );
           },

@@ -11,13 +11,15 @@ import 'engine.dart';
 
 /// A [StatelessWidget] that provides [Store] access to its descendants via a
 /// static [of] method.
-class StoreProvider<S> extends StatelessWidget {
+class StoreProvider<S> extends StatefulWidget {
   final Store<S> store;
   final Widget child;
+  final bool disposeStore;
 
   StoreProvider({
     @required this.store,
     @required this.child,
+    this.disposeStore = false,
     Key key,
   }) : super(key: key);
 
@@ -35,11 +37,25 @@ class StoreProvider<S> extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return _InheritedStoreProvider<S>(store: store, child: child);
-  }
+  _StoreProviderState<S> createState() => _StoreProviderState<S>();
 
   static Type _type<T>() => T;
+}
+
+class _StoreProviderState<S> extends State<StoreProvider<S>> {
+  @override
+  Widget build(BuildContext context) {
+    return _InheritedStoreProvider<S>(store: widget.store, child: widget.child);
+  }
+
+  @override
+  void dispose() {
+    if (widget.disposeStore) {
+      widget.store.dispose();
+    }
+
+    super.dispose();
+  }
 }
 
 /// The [InheritedWidget] used by [StoreProvider].

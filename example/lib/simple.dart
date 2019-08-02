@@ -272,6 +272,25 @@ class DescriptionDisplayWidget extends StatelessWidget {
   }
 }
 
+// Under normal circumstances, you probably wouldn't want to have a Store just
+// hanging out as a top-level variable. It's being done here to make the point
+// that you can have a long-lived Store somewhere in memory and use it with
+// different StoreProvider widgets.
+//
+// The list example, on the other hand, creates a new Store each time that page
+// is displayed, and tears down the Store when finished.
+final _store = Store<SimpleAppState>(
+  initialState: SimpleAppState.initialState(),
+  blocs: [
+    LoggerBloc(),
+    LimitBloc(),
+    IntBloc(),
+    DoubleBloc(),
+    StringBloc(),
+    DescriptionBloc(),
+  ],
+);
+
 class SimpleExamplePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -279,17 +298,7 @@ class SimpleExamplePage extends StatelessWidget {
 
     return Center(
       child: StoreProvider<SimpleAppState>(
-        store: Store<SimpleAppState>(
-          initialState: SimpleAppState.initialState(),
-          blocs: [
-            LoggerBloc(),
-            LimitBloc(),
-            IntBloc(),
-            DoubleBloc(),
-            StringBloc(),
-            DescriptionBloc(),
-          ],
-        ),
+        store: _store,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: ListView(
