@@ -1,3 +1,23 @@
+## [0.3.0] - 8/1/2019
+
+* Breaking change: Added disposal of stores and blocs.
+  - The `Bloc` interface now has a fourth method, `dispose`. Blocs
+    should implement this method to close/dispose of any resources
+    they use. A Bloc should not expect any of its other methods to be
+    invoked after it's disposed.
+  - The `Store` class now has a `dispose` method as well. This will
+    clean up any resources used by the store and invoke `dispose` on
+    any Blocs it was given in its constructor.
+  - The `StoreProvider` widget gains an optional named parameter to
+    its constructor, `disposeStore`. False by default, if this flag
+    is set to true, the `StoreProvider` will call `dispose` on its
+    store when its State object is disposed.
+* Refactored examples from a pair of apps into a single one. Also
+  consolidated tests.
+  - The "simple" example uses a long-lived `Store`, and the list
+    example uses the new `dispose` functionality to create a new
+    Store whenever it's shown.
+
 ## [0.2.0] - 10/18/2018
 
 * Breaking change: Added the concept of "afterware" to the library.
