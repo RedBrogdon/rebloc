@@ -4,15 +4,15 @@ description: |
   Redux and BLoC. Rebloc uses streams and BLoCs to compose
   middleware and reducers.
 
-version: 0.3.0
+version: 0.3.0+1
 author: Andrew Brogdon <brogdon+github@gmail.com>
 homepage: https://github.com/redbrogdon/rebloc
 
 dependencies:
   flutter:
     sdk: flutter
-  meta: ^1.1.6
-  rxdart: ^0.22.0
+  meta: ^1.1.7
+  rxdart: ^0.22.1
 
 dev_dependencies:
   flutter_test:

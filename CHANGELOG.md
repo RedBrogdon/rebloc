@@ -1,3 +1,7 @@
+## [0.3.0+1] - 8/1/2019
+
+* Updated deps to latest versions.
+
 ## [0.3.0] - 8/1/2019
 
 * Breaking change: Added disposal of stores and blocs.
