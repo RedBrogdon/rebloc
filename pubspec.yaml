@@ -5,7 +5,6 @@ description: |
   middleware and reducers.
 
 version: 0.3.0+2
-author: Andrew Brogdon <brogdon+github@gmail.com>
 homepage: https://github.com/redbrogdon/rebloc
 
 dependencies:
