@@ -24,13 +24,12 @@ class StoreProvider<S> extends StatefulWidget {
   }) : super(key: key);
 
   static Store<S> of<S>(BuildContext context) {
-    final Type type = _type<_InheritedStoreProvider<S>>();
-
-    Widget widget = context.inheritFromWidgetOfExactType(type);
+    Widget widget = context
+        .dependOnInheritedWidgetOfExactType<_InheritedStoreProvider<S>>();
 
     if (widget == null) {
       throw Exception(
-          'Couldn\'t find a StoreProvider of the correct type ($type).');
+          'Couldn\'t find a StoreProvider of the correct type ($S).');
     } else {
       return (widget as _InheritedStoreProvider<S>).store;
     }
@@ -38,8 +37,6 @@ class StoreProvider<S> extends StatefulWidget {
 
   @override
   _StoreProviderState<S> createState() => _StoreProviderState<S>();
-
-  static Type _type<T>() => T;
 }
 
 class _StoreProviderState<S> extends State<StoreProvider<S>> {
