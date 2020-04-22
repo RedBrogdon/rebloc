@@ -1,3 +1,7 @@
+## [0.3.0+3] - 4/22/2020
+
+* Updating to latest versions of RxDart and other deps.
+
 ## [0.3.0+2] - 2/11/2020
 
 * Updating to latest versions of RxDart and other deps.
