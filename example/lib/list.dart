@@ -135,7 +135,7 @@ class NameAndCount extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('$name', style: Theme.of(context).textTheme.headline),
+                Text('$name', style: Theme.of(context).textTheme.headline5),
                 Text('Count: $viewModel'),
                 Text('Rebuilt at $dateStr'),
               ],

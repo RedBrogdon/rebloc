@@ -304,16 +304,16 @@ class SimpleExamplePage extends StatelessWidget {
           child: ListView(
             children: [
               SizedBox(height: 16.0),
-              Text('Integer view model:', style: textTheme.subhead),
+              Text('Integer view model:', style: textTheme.subtitle1),
               IntDisplayWidget(),
               SizedBox(height: 24.0),
-              Text('Double view model:', style: textTheme.subhead),
+              Text('Double view model:', style: textTheme.subtitle1),
               DoubleDisplayWidget(),
               SizedBox(height: 24.0),
-              Text('String view model:', style: textTheme.subhead),
+              Text('String view model:', style: textTheme.subtitle1),
               StringDisplayWidget(),
               SizedBox(height: 24.0),
-              Text('Combined view model:', style: textTheme.subhead),
+              Text('Combined view model:', style: textTheme.subtitle1),
               DescriptionDisplayWidget(),
               DispatchSubscriber<SimpleAppState>(
                 builder: (context, dispatcher) => Padding(
