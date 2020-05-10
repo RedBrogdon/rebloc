@@ -1,3 +1,7 @@
+## [0.3.0+4] - 5/9/2020
+
+* Updated text styles for Flutter 1.17.
+
 ## [0.3.0+3] - 4/22/2020
 
 * Updating to latest versions of RxDart and other deps.
