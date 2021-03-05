@@ -161,7 +161,7 @@ class IntDisplayWidget extends StatelessWidget {
               Text('Value: $viewModel'),
               Text('Rebuilt at $dateStr'),
               SizedBox(height: 4.0),
-              RaisedButton(
+              ElevatedButton(
                 child: Text('Increment'),
                 onPressed: () => dispatcher(IntAction()),
               )
@@ -189,7 +189,7 @@ class DoubleDisplayWidget extends StatelessWidget {
               Text('Value: $viewModel'),
               Text('Rebuilt at $dateStr'),
               SizedBox(height: 4.0),
-              RaisedButton(
+              ElevatedButton(
                 child: Text('Increment'),
                 onPressed: () => dispatcher(DoubleAction()),
               )
@@ -217,7 +217,7 @@ class StringDisplayWidget extends StatelessWidget {
               Text('Value: $viewModel'),
               Text('Rebuilt at $dateStr'),
               SizedBox(height: 4.0),
-              RaisedButton(
+              ElevatedButton(
                 child: Text('Increment'),
                 onPressed: () => dispatcher(StringAction('A')),
               )
@@ -260,7 +260,7 @@ class DescriptionDisplayWidget extends StatelessWidget {
               Text('Value: ${viewModel.description}'),
               Text('Rebuilt at $dateStr'),
               SizedBox(height: 4.0),
-              RaisedButton(
+              ElevatedButton(
                 child: Text('Increment everything'),
                 onPressed: () => dispatcher(DescriptionAction()),
               ),
@@ -318,7 +318,7 @@ class SimpleExamplePage extends StatelessWidget {
               DispatchSubscriber<SimpleAppState>(
                 builder: (context, dispatcher) => Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: RaisedButton(
+                  child: ElevatedButton(
                     child: Text('Reset everything'),
                     onPressed: () => dispatcher(ResetAction()),
                   ),
