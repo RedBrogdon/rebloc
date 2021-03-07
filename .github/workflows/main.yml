@@ -12,7 +12,6 @@ on:
 jobs:
   flutter-tests:
     name: Analyze/format/test Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         flutter_version: [dev, beta, stable]

@@ -1,6 +1,6 @@
 # rebloc
 
-[![Build Status](https://travis-ci.org/RedBrogdon/rebloc.svg?branch=master)](https://travis-ci.org/RedBrogdon/rebloc)
+[![Build Status](https://github.com/RedBrogdon/rebloc/workflows/Flutter%20CI/badge.svg)](https://github.com/redbrogdon/rebloc/actions?workflow=Flutter%20CI)
 
 A state management library for Flutter that combines aspects of Redux
 and BLoC (this readme assumes some familiarity with both). It's a
