@@ -1,3 +1,8 @@
+## [0.4.0] - 3/5/2021
+
+* Breaking change: migrated to null safety.
+* Updated for Flutter 2.
+
 ## [0.3.0+4] - 5/9/2020
 
 * Updated text styles for Flutter 1.17.

@@ -44,7 +44,7 @@ class NamesAndCountsBloc implements Bloc<ListAppState> {
   static const _names = ['Steve', 'Yu Yan', 'Sreela', 'Angelica', 'Guillaume'];
   static Random _rng = Random();
 
-  Timer _timer;
+  Timer? _timer;
 
   @override
   Stream<WareContext<ListAppState>> applyMiddleware(
@@ -88,12 +88,12 @@ class NamesAndCountsBloc implements Bloc<ListAppState> {
   @override
   void dispose() {
     print('Disposing NamesAndCountsBloc!');
-    _timer.cancel();
+    _timer?.cancel();
   }
 }
 
 class LoggerBloc extends SimpleBloc<ListAppState> {
-  ListAppState lastState;
+  ListAppState? lastState;
 
   @override
   Future<Action> middleware(dispatcher, state, action) async {
@@ -119,12 +119,15 @@ class LoggerBloc extends SimpleBloc<ListAppState> {
 class NameAndCount extends StatelessWidget {
   final String name;
 
-  const NameAndCount(this.name, {Key key}) : super(key: key);
+  const NameAndCount(
+    this.name, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelSubscriber<ListAppState, int>(
-      converter: (state) => state.namesAndCounts[name],
+      converter: (state) => state.namesAndCounts[name]!,
       builder: (context, dispatcher, viewModel) {
         final dateStr = formatTime(DateTime.now());
 

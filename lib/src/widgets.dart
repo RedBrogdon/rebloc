@@ -5,7 +5,8 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart' hide Action;
-import 'package:rxdart/subjects.dart' show BehaviorSubject;
+import 'package:rxdart/subjects.dart';
+import 'package:rxdart/streams.dart';
 
 import 'engine.dart';
 
@@ -17,21 +18,21 @@ class StoreProvider<S> extends StatefulWidget {
   final bool disposeStore;
 
   StoreProvider({
-    @required this.store,
-    @required this.child,
+    required this.store,
+    required this.child,
     this.disposeStore = false,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   static Store<S> of<S>(BuildContext context) {
-    Widget widget = context
+    final widget = context
         .dependOnInheritedWidgetOfExactType<_InheritedStoreProvider<S>>();
 
     if (widget == null) {
       throw Exception(
           'Couldn\'t find a StoreProvider of the correct type ($S).');
     } else {
-      return (widget as _InheritedStoreProvider<S>).store;
+      return (widget).store;
     }
   }
 
@@ -59,8 +60,11 @@ class _StoreProviderState<S> extends State<StoreProvider<S>> {
 class _InheritedStoreProvider<S> extends InheritedWidget {
   final Store<S> store;
 
-  _InheritedStoreProvider({Key key, Widget child, this.store})
-      : super(key: key, child: child);
+  _InheritedStoreProvider({
+    Key? key,
+    required Widget child,
+    required this.store,
+  }) : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(_InheritedStoreProvider<S> oldWidget) =>
@@ -94,9 +98,9 @@ class ViewModelSubscriber<S, V> extends StatelessWidget {
   final ViewModelWidgetBuilder<S, V> builder;
 
   ViewModelSubscriber({
-    @required this.converter,
-    @required this.builder,
-    Key key,
+    required this.converter,
+    required this.builder,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -118,10 +122,10 @@ class _ViewModelStreamBuilder<S, V> extends StatefulWidget {
   final ViewModelWidgetBuilder<S, V> builder;
 
   _ViewModelStreamBuilder({
-    @required this.dispatcher,
-    @required this.stream,
-    @required this.converter,
-    @required this.builder,
+    required this.dispatcher,
+    required this.stream,
+    required this.converter,
+    required this.builder,
   });
 
   @override
@@ -133,11 +137,11 @@ class _ViewModelStreamBuilder<S, V> extends StatefulWidget {
 /// model, and then uses it to rebuild its children.
 class _ViewModelStreamBuilderState<S, V>
     extends State<_ViewModelStreamBuilder<S, V>> {
-  V _latestViewModel;
-  StreamSubscription<V> _subscription;
+  late V _latestViewModel;
+  late StreamSubscription<V> _subscription;
 
   void _subscribe() {
-    _latestViewModel = widget.converter(widget.stream.value);
+    _latestViewModel = widget.converter(widget.stream.requireValue);
     _subscription = widget.stream
         .map<V>((s) => widget.converter(s))
         .distinct()
@@ -166,7 +170,6 @@ class _ViewModelStreamBuilderState<S, V>
   @override
   void dispose() {
     _subscription.cancel();
-    _subscription = null;
     super.dispose();
   }
 
@@ -190,8 +193,8 @@ typedef Widget DispatchWidgetBuilder(
 /// dispatcher property as one of its parameters.
 class DispatchSubscriber<S> extends StatelessWidget {
   DispatchSubscriber({
-    @required this.builder,
-    Key key,
+    required this.builder,
+    Key? key,
   }) : super(key: key);
 
   final DispatchWidgetBuilder builder;
@@ -211,9 +214,9 @@ class DispatchSubscriber<S> extends StatelessWidget {
 /// widget displaying a cached copy of that data is first displayed.
 class FirstBuildDispatcher<S> extends StatefulWidget {
   const FirstBuildDispatcher({
-    @required this.action,
-    @required this.child,
-    Key key,
+    required this.action,
+    required this.child,
+    Key? key,
   }) : super(key: key);
 
   final Action action;
@@ -232,7 +235,7 @@ class _FirstBuildDispatcherState<S> extends State<FirstBuildDispatcher<S>> {
     if (!hasDispatched) {
       hasDispatched = true;
       final store = StoreProvider.of<S>(context);
-      store?.dispatch(widget.action);
+      store.dispatch(widget.action);
     }
 
     return widget.child;

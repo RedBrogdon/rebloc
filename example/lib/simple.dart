@@ -21,7 +21,7 @@ class SimpleAppState {
         aDouble = 0.0,
         aString = "AAA";
 
-  SimpleAppState copyWith({int anInt, double aDouble, String aString}) {
+  SimpleAppState copyWith({int? anInt, double? aDouble, String? aString}) {
     return SimpleAppState(
       anInt ?? this.anInt,
       aDouble ?? this.aDouble,
@@ -101,7 +101,7 @@ class DescriptionBloc extends SimpleBloc<SimpleAppState> {
 }
 
 class LoggerBloc extends SimpleBloc<SimpleAppState> {
-  SimpleAppState lastState;
+  SimpleAppState? lastState;
 
   @override
   Future<Action> middleware(dispatcher, state, action) async {

@@ -5,7 +5,8 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:rxdart/subjects.dart' show BehaviorSubject;
+import 'package:rxdart/subjects.dart';
+import 'package:rxdart/streams.dart';
 
 /// A Redux-style action. Apps change their overall state by dispatching actions
 /// to the [Store], where they are acted on by middleware, reducers, and
@@ -89,7 +90,7 @@ class Store<S> {
   final List<Bloc> _blocs;
 
   Store({
-    @required S initialState,
+    required S initialState,
     List<Bloc<S>> blocs = const [],
   })  : states = BehaviorSubject<S>.seeded(initialState),
         _blocs = blocs {
@@ -102,7 +103,7 @@ class Store<S> {
     }
 
     var reducerStream = dispatchStream.map<Accumulator<S>>(
-        (context) => Accumulator(context.action, states.value));
+        (context) => Accumulator(context.action, states.requireValue));
 
     for (Bloc<S> bloc in blocs) {
       reducerStream = bloc.applyReducer(reducerStream);
@@ -119,7 +120,7 @@ class Store<S> {
   }
 
   void dispatch(Action action) {
-    _dispatchController.add(WareContext(dispatch, states.value, action));
+    _dispatchController.add(WareContext(dispatch, states.requireValue, action));
   }
 
   /// Invokes the dispose method on each Bloc, so they can deallocate/close any
