@@ -141,7 +141,7 @@ class _ViewModelStreamBuilderState<S, V>
   late StreamSubscription<V> _subscription;
 
   void _subscribe() {
-    _latestViewModel = widget.converter(widget.stream.requireValue);
+    _latestViewModel = widget.converter(widget.stream.value);
     _subscription = widget.stream
         .map<V>((s) => widget.converter(s))
         .distinct()
