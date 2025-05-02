@@ -103,7 +103,7 @@ class Store<S> {
     }
 
     var reducerStream = dispatchStream.map<Accumulator<S>>(
-        (context) => Accumulator(context.action, states.requireValue));
+        (context) => Accumulator(context.action, states.value));
 
     for (Bloc<S> bloc in blocs) {
       reducerStream = bloc.applyReducer(reducerStream);
@@ -120,7 +120,7 @@ class Store<S> {
   }
 
   void dispatch(Action action) {
-    _dispatchController.add(WareContext(dispatch, states.requireValue, action));
+    _dispatchController.add(WareContext(dispatch, states.value, action));
   }
 
   /// Invokes the dispose method on each Bloc, so they can deallocate/close any
